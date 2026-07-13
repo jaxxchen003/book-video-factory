@@ -26,6 +26,17 @@ book_video_warehouse/**
 *.otf
 *.ttf
 
+# Public showcase assets explicitly approved for this repository. Keep this
+# allowlist exact so newly generated production media remains ignored.
+!examples/posters/boundaries.jpg
+!examples/posters/highly-sensitive.jpg
+!examples/posters/no-people-pleasing.jpg
+!examples/posters/original-family.jpg
+!examples/videos/boundaries.mp4
+!examples/videos/highly-sensitive.mp4
+!examples/videos/no-people-pleasing.mp4
+!examples/videos/original-family.mp4
+
 # User-provided authorization material
 voice_profiles/
 reference_media/

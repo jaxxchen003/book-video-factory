@@ -24,6 +24,45 @@ The Skill is available on the next turn after installation.
 - Defines rights, source, caption, QC, and ChatCut handoff gates.
 - Writes an append-only run-cost ledger that never invents token values.
 
+## Example outputs / 示例成片
+
+These are full pipeline outputs, not source material bundled with the Skill. Click a poster to open the MP4.
+
+| 《界限》 | 《不去讨好任何人》 |
+| --- | --- |
+| [![《界限》成片封面](examples/posters/boundaries.jpg)](examples/videos/boundaries.mp4) | [![《不去讨好任何人》成片封面](examples/posters/no-people-pleasing.jpg)](examples/videos/no-people-pleasing.mp4) |
+| [Watch MP4 · 49.6s](examples/videos/boundaries.mp4) | [Watch MP4 · 50.7s](examples/videos/no-people-pleasing.mp4) |
+
+| 《原生家庭》 | 《高敏感是种天赋》 |
+| --- | --- |
+| [![《原生家庭》成片封面](examples/posters/original-family.jpg)](examples/videos/original-family.mp4) | [![《高敏感是种天赋》成片封面](examples/posters/highly-sensitive.jpg)](examples/videos/highly-sensitive.mp4) |
+| [Watch MP4 · 56.7s](examples/videos/original-family.mp4) | [Watch MP4 · 57.8s](examples/videos/highly-sensitive.mp4) |
+
+The demo videos are maintained showcase outputs and are **not** licensed under this repository's MIT licence. Book covers, titles, quotations, trademarks, music, and other third-party elements remain the property of their respective rights holders. Verify your rights before reusing or redistributing a demo.
+
+## Recommended toolchain / 各环节推荐工具与能力
+
+The Skill is the operating contract and orchestration layer; it does not silently install providers, models, accounts, media, or credentials. Each provider can be replaced if the same inputs, provenance records, quality gates, and release contract are preserved.
+
+| Production stage | Recommended tool or capability | What it is used for | Requirement / boundary |
+| --- | --- | --- | --- |
+| Topic discovery / 选题 | Authorized [WeChat Reading Skill](https://github.com/Tencent/WeChatReading), attributable public book metadata, public trend/search data, and Codex research | Build the topic queue, compare angles, collect book facts and evidence | WeRead is optional and credential-gated; never bypass login or platform controls |
+| Evidence and rights / 资料与授权 | Source manifest, URL/file hash, licence/authorization record, and a human approval gate | Keep every cover, quotation, voice reference, BGM and SFX auditable | Required before an asset can enter the approved set |
+| Story and bilingual copy / 脚本与双语文案 | Codex writing/reasoning plus human editorial review; native-level English review when publishing internationally | Hook, 15-line story structure, Chinese captions and matched English captions | AI output is a draft; factual claims, quotations and translation require review |
+| Scene images / 场景图 | Codex image generation using GPT Image, or another approved image provider | Generate 12 distinct, topic-specific, text-free 3:4 scenes | Save prompt, model/provider, generation date and approval state; do not ask the model to fake a real cover |
+| Book cover / 真实书封 | Authorized WeRead/publisher/user-supplied cover plus provenance metadata | Composite the real edition cover into selected scenes | Keep the cover separate from generated art and confirm reuse rights |
+| Narration / 人声 | [OpenBMB VoxCPM2](https://github.com/OpenBMB/VoxCPM) locally, or an authorized human/cloud TTS provider | Produce a stable channel voice and project narration | Lock one approved voice reference; clone only voices with explicit permission |
+| Timing and captions / 对齐与字幕 | [faster-whisper](https://github.com/SYSTRAN/faster-whisper), Whisper-compatible ASR, or an editor transcript | Derive word/segment timing, SRT/ASS and bilingual caption cues | Timing must come from real narration audio; never invent timestamps |
+| BGM and SFX / 音乐与音效 | One project-specific licensed track, user-owned audio, or an authorized music-generation capability; optional ChatCut music generation | Establish mood, intro rhythm and voice ducking | Record creator/provider, licence, source, hash and attribution; never copy reference-video audio |
+| Typography and graphics / 字体与图层 | [Pillow](https://python-pillow.org/) plus a permitted CJK font such as Source Han/Noto CJK | Render centered titles, bilingual captions, outlines and safe margins | Fonts are not bundled; verify font licence and keep a local font manifest |
+| Deterministic render / 合成 | [FFmpeg and FFprobe](https://ffmpeg.org/) | 3:4 composition, image motion, transitions, mixing, ducking, encoding and media inspection | Required for the local-render path |
+| Orchestration / 流水线调度 | Codex + this Skill's bootstrap, doctor and quality-gate contracts | Move an approved topic through research, assets, voice, render, QC and delivery | Human gates remain at topic, script, rights and publish approval |
+| Cost ledger / 成本记录 | `scripts/run_cost.py` plus provider telemetry | Append image jobs, voice seconds, render seconds, retries and known Codex token counts | Missing telemetry is recorded as `—`, never guessed as zero |
+| QC / 质检 | FFprobe, release manifests, source checks and human audio/visual review | Validate codec, audio stream, duration, captions, safe areas, provenance and versioning | Local QC must pass before editor handoff or publication |
+| Fine edit / 精修 | Optional ChatCut project | Make scoped rhythm, subtitle, audio and motion adjustments on an editable timeline | Import only after local QC; export a new derivative and never overwrite the local master |
+
+Minimum planning only needs Codex and Python 3.11+. A full local render normally needs Python 3.11+, FFmpeg/FFprobe, Pillow, one permitted image capability, one permitted narration path, an ASR timing path, an authorized BGM/SFX source, and enough disk space. Run `doctor.py` to distinguish planning-ready from render-ready.
+
 ## What you provide
 
 You must provide or explicitly authorize all real-world media and accounts: book sources/covers, narration method or voice reference, BGM/SFX, image generation account, optional WeRead access, optional ChatCut account, and a publishing decision. Review the [first-run guide](skills/book-video-factory/references/first-run.md) before production.
