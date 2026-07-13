@@ -26,17 +26,17 @@ The Skill is available on the next turn after installation.
 
 ## Example outputs / 示例成片
 
-These are full pipeline outputs, not source material bundled with the Skill. Click a poster to open the MP4.
+These are full pipeline outputs, not source material bundled with the Skill. Click a poster to open the browser-based video player, or [open the complete showcase](https://jaxxchen003.github.io/book-video-factory/demos.html).
 
 | 《界限》 | 《不去讨好任何人》 |
 | --- | --- |
-| [![《界限》成片封面](examples/posters/boundaries.jpg)](examples/videos/boundaries.mp4) | [![《不去讨好任何人》成片封面](examples/posters/no-people-pleasing.jpg)](examples/videos/no-people-pleasing.mp4) |
-| [Watch MP4 · 49.6s](examples/videos/boundaries.mp4) | [Watch MP4 · 50.7s](examples/videos/no-people-pleasing.mp4) |
+| [![《界限》成片封面](examples/posters/boundaries.jpg)](https://jaxxchen003.github.io/book-video-factory/demos.html#boundaries) | [![《不去讨好任何人》成片封面](examples/posters/no-people-pleasing.jpg)](https://jaxxchen003.github.io/book-video-factory/demos.html#no-people-pleasing) |
+| [Play video · 49.6s](https://jaxxchen003.github.io/book-video-factory/demos.html#boundaries) | [Play video · 50.7s](https://jaxxchen003.github.io/book-video-factory/demos.html#no-people-pleasing) |
 
 | 《原生家庭》 | 《高敏感是种天赋》 |
 | --- | --- |
-| [![《原生家庭》成片封面](examples/posters/original-family.jpg)](examples/videos/original-family.mp4) | [![《高敏感是种天赋》成片封面](examples/posters/highly-sensitive.jpg)](examples/videos/highly-sensitive.mp4) |
-| [Watch MP4 · 56.7s](examples/videos/original-family.mp4) | [Watch MP4 · 57.8s](examples/videos/highly-sensitive.mp4) |
+| [![《原生家庭》成片封面](examples/posters/original-family.jpg)](https://jaxxchen003.github.io/book-video-factory/demos.html#original-family) | [![《高敏感是种天赋》成片封面](examples/posters/highly-sensitive.jpg)](https://jaxxchen003.github.io/book-video-factory/demos.html#highly-sensitive) |
+| [Play video · 56.7s](https://jaxxchen003.github.io/book-video-factory/demos.html#original-family) | [Play video · 57.8s](https://jaxxchen003.github.io/book-video-factory/demos.html#highly-sensitive) |
 
 The demo videos are maintained showcase outputs and are **not** licensed under this repository's MIT licence. Book covers, titles, quotations, trademarks, music, and other third-party elements remain the property of their respective rights holders. Verify your rights before reusing or redistributing a demo.
 

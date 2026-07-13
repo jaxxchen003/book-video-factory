@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Book Video Factory generated video examples">
+    <title>Book Video Factory · 示例成片</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --background: #090909;
+        --surface: #141414;
+        --border: #2b2b2b;
+        --text: #f5f5f3;
+        --muted: #aaa8a2;
+        --accent: #e2b35c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", sans-serif;
+      }
+
+      main {
+        width: min(1080px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 56px 0 80px;
+      }
+
+      header {
+        max-width: 720px;
+        margin-bottom: 36px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 6vw, 4.5rem);
+        letter-spacing: -0.04em;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      article {
+        scroll-margin-top: 24px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--surface);
+      }
+
+      video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        background: #000;
+        object-fit: contain;
+      }
+
+      .meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 20px 20px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .duration {
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      footer {
+        margin-top: 36px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 720px) {
+        main {
+          padding-top: 32px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>示例成片</h1>
+        <p>Book Video Factory 的四条完整流水线输出。点击播放器即可在线播放；返回 <a href="https://github.com/jaxxchen003/book-video-factory">GitHub 仓库</a> 查看安装方式和生产工具链。</p>
+      </header>
+
+      <section class="grid" aria-label="示例视频">
+        <article id="boundaries">
+          <video controls playsinline preload="metadata" poster="examples/posters/boundaries.jpg">
+            <source src="examples/videos/boundaries.mp4" type="video/mp4">
+            当前浏览器不支持 HTML5 视频播放。
+          </video>
+          <div class="meta"><h2>《界限》</h2><span class="duration">49.6s</span></div>
+        </article>
+
+        <article id="no-people-pleasing">
+          <video controls playsinline preload="metadata" poster="examples/posters/no-people-pleasing.jpg">
+            <source src="examples/videos/no-people-pleasing.mp4" type="video/mp4">
+            当前浏览器不支持 HTML5 视频播放。
+          </video>
+          <div class="meta"><h2>《不去讨好任何人》</h2><span class="duration">50.7s</span></div>
+        </article>
+
+        <article id="original-family">
+          <video controls playsinline preload="metadata" poster="examples/posters/original-family.jpg">
+            <source src="examples/videos/original-family.mp4" type="video/mp4">
+            当前浏览器不支持 HTML5 视频播放。
+          </video>
+          <div class="meta"><h2>《原生家庭》</h2><span class="duration">56.7s</span></div>
+        </article>
+
+        <article id="highly-sensitive">
+          <video controls playsinline preload="metadata" poster="examples/posters/highly-sensitive.jpg">
+            <source src="examples/videos/highly-sensitive.mp4" type="video/mp4">
+            当前浏览器不支持 HTML5 视频播放。
+          </video>
+          <div class="meta"><h2>《高敏感是种天赋》</h2><span class="duration">57.8s</span></div>
+        </article>
+      </section>
+
+      <footer>
+        <p>这些示例视频不属于仓库 MIT 许可证的授权范围。书封、书名、引用、音乐及其他第三方元素的权利归各自权利人所有，复用或再分发前请自行确认授权。</p>
+      </footer>
+    </main>
+  </body>
+</html>
