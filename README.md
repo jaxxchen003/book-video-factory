@@ -5,7 +5,7 @@ An installable Codex skill for running a rights-aware, local-first workflow for 
 ## Install
 
 ```bash
-npx skills add jaxxchen003/book-video-factory -g
+npx skills add jaxxchen003/book-video-factory --skill book-video-factory -g -y
 ```
 
 Open a new Codex task in an empty workspace and say:
