@@ -1,0 +1,4 @@
+interface:
+  display_name: "图书号短视频工厂"
+  short_description: "Portable auditable book-video workflow"
+  default_prompt: "Use $book-video-factory to bootstrap a clean workspace and prepare one rights-aware bilingual book-video project."

@@ -1,0 +1,32 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+.venv/
+dist/
+build/
+
+# Production media, source records, credentials, and account/editor metadata
+book_video_warehouse/**
+!book_video_warehouse/.gitkeep
+!book_video_warehouse/README.md
+*.mp4
+*.mov
+*.mkv
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.srt
+*.ass
+*.otf
+*.ttf
+
+# User-provided authorization material
+voice_profiles/
+reference_media/
+chatcut/
