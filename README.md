@@ -26,14 +26,14 @@ The Skill is available on the next turn after installation.
 
 ## What you provide
 
-You must provide or explicitly authorize all real-world media and accounts: book sources/covers, narration method or voice reference, BGM/SFX, image generation account, optional WeRead access, optional ChatCut account, and a publishing decision. Review the [first-run guide](references/first-run.md) before production.
+You must provide or explicitly authorize all real-world media and accounts: book sources/covers, narration method or voice reference, BGM/SFX, image generation account, optional WeRead access, optional ChatCut account, and a publishing decision. Review the [first-run guide](skills/book-video-factory/references/first-run.md) before production.
 
 ## Bootstrap without Codex
 
 ```bash
-python3 scripts/bootstrap_workspace.py --workspace .
-python3 scripts/doctor.py --profile planning
-python3 scripts/bootstrap_workspace.py --workspace . \
+python3 skills/book-video-factory/scripts/bootstrap_workspace.py --workspace .
+python3 skills/book-video-factory/scripts/doctor.py --profile planning
+python3 skills/book-video-factory/scripts/bootstrap_workspace.py --workspace . \
   --slug my-first-book --book-title 'Example Book' --author 'Example Author'
 ```
 
@@ -44,7 +44,7 @@ The MIT licence applies only to this repository's code and documentation. It doe
 ## Development checks
 
 ```bash
-python3 -m unittest discover -s tests -v
+python3 -m unittest discover -s skills/book-video-factory/tests -v
 ```
 
 When the Codex Skill Creator is available, also run its `quick_validate.py` against this repository root.
