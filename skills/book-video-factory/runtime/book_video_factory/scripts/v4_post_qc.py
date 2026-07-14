@@ -25,6 +25,10 @@ def probe(path: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a V4 local master and release constraints")
     parser.add_argument("--project", type=Path, required=True)
+    parser.add_argument(
+        "--release-id",
+        help="Bind this QC result to one release. Omit only for a non-publishable local preview.",
+    )
     args = parser.parse_args()
     project = args.project.resolve()
     meta = read_json(project / "project.json")
@@ -63,6 +67,7 @@ def main() -> int:
         "schema_version": "1.0",
         "generated_at": datetime.now(UTC).isoformat(),
         "project_id": slug,
+        "release_id": args.release_id,
         "local_master_status": "pass" if technical_pass else "fail",
         "public_release_allowed": technical_pass and not release_holds,
         "technical_checks": technical_checks,

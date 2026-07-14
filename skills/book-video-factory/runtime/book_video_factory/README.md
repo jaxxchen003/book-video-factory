@@ -2,7 +2,7 @@
 
 这个目录只保存可复用能力：程序、脚本、模板契约、依赖说明和运行文档。每一本书的实际资料与媒体产物保存在相邻的 `book_video_warehouse/`，避免把工厂代码和生产素材混在一起。
 
-## 已实现的 P0 基座
+## 已实现的工程基座
 
 - 标准项目目录初始化，支持重复执行而不覆盖已有产物。
 - 参考视频元数据探测与来源登记。
@@ -12,6 +12,9 @@
 - 批准稿到成片的一键构建：ASR 字级对齐、镜头时间线、中文字幕图层、轻推镜、BGM ducking、最终混音和媒体 QC。
 - V2 品牌模板：固定钩子片头、8 张主题卡高速切换、真实书封合成、居中出版物字体、中英双语字幕、分段音乐增益，以及 3:4/9:16/clean 多版本交付。
 - 独立单元测试，不依赖现有人物视频项目的历史素材。
+- `single-book` 与 `content-system-backed` 双模式；后者消费 `dbs-content-system` 的不可变内容资产快照。
+- `source_document / content_unit / claim / assembly_brief` 对象校验，以及脚本—Claim—场景全链路追溯。
+- 统一 V4 scene-line 合同，消除场景计划与真实渲染时间线漂移。
 
 ## 快速开始
 
@@ -23,7 +26,7 @@ python3 book_video_factory/scripts/init_project.py \
   --slug doudi-qingshan \
   --book-title 兜底 \
   --author 晴山 \
-  --reference-video '/absolute/path/to/user-supplied-reference.mp4'
+  --reference-video '/path/to/reference-video.mp4'
 
 python3 book_video_factory/scripts/collect_weread.py \
   --project book_video_warehouse/projects/doudi-qingshan \
@@ -36,6 +39,8 @@ python3 book_video_factory/scripts/build_final_video.py \
 python3 book_video_factory/scripts/build_final_video_v2.py \
   book_video_warehouse/projects/doudi-qingshan
 ```
+
+如果选题来自上游内容资产系统，初始化时增加 `--mode content-system-backed`，再用 `scripts/content_bridge.py` 导入 package 并附加 traceability。详见 [内容资产系统桥接](docs/CONTENT_SYSTEM_BRIDGE.md)。
 
 正式渲染要求项目内已有 `script.approved.json`、锁定版旁白、ASR 字级时间戳、12 张批准镜头和已登记授权的 BGM。脚本会输出预览片、正式成片、SRT、渲染清单、音乐署名文件与 QC 报告，并把交付包复制到 `10_delivery_交付/`。
 

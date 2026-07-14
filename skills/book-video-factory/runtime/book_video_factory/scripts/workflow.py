@@ -53,6 +53,7 @@ def main() -> int:
     evaluate = subcommands.add_parser("evaluate")
     evaluate.add_argument("--project", type=Path, required=True)
     evaluate.add_argument("--profile", type=Path, default=DEFAULT_PROFILE)
+    evaluate.add_argument("--release-id")
     evaluate.add_argument("--target", choices=STATE_ORDER[1:])
 
     approve = subcommands.add_parser("approve")
@@ -84,7 +85,7 @@ def main() -> int:
         except ContractError as error:
             print(json.dumps({"error": str(error)}, ensure_ascii=False))
             return 3
-        result = evaluate_workflow_state(project, profile)
+        result = evaluate_workflow_state(project, profile, release_id=args.release_id)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         if not args.target:
             return 0

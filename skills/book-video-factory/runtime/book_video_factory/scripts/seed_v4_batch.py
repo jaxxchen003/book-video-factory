@@ -12,6 +12,9 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+import _bootstrap  # noqa: F401
+from book_video_factory.scene_contract import V4_SCENE_LINE_CONTRACT
+
 
 ROLES = [
     "thesis", "insight", "problem", "clarification", "reframe", "method",
@@ -305,7 +308,11 @@ def seed(project: Path, spec: dict) -> None:
         "schema_version": "1.0", "project_id": spec["slug"], "style": STYLE,
         "render_target": "approved/v4/S01.png ... S12.png",
         "scenes": [
-            {"id": f"S{index:02d}", "line_ids": [f"V{min(15, index + 3):02d}"], "prompt": f"{STYLE}; {visual}"}
+            {
+                "id": f"S{index:02d}",
+                "line_ids": list(V4_SCENE_LINE_CONTRACT[f"S{index:02d}"]),
+                "prompt": f"{STYLE}; {visual}",
+            }
             for index, visual in enumerate(spec["visuals"], start=1)
         ],
     }

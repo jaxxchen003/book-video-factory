@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jaxxmind.local/book-video-factory/source_document.schema.json",
+  "title": "Content-system source document snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "relative_path",
+    "source_type",
+    "author",
+    "upstream_status",
+    "notes",
+    "content_sha256",
+    "upstream_registry_path"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^SRC-(?!\\*$)[A-Z0-9-]+$"},
+    "relative_path": {"type": "string", "minLength": 1},
+    "source_type": {"type": "string", "minLength": 1},
+    "author": {"type": "string", "minLength": 1},
+    "upstream_status": {"type": "string", "minLength": 1},
+    "notes": {"type": "string"},
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "upstream_registry_path": {"type": "string", "minLength": 1}
+  }
+}

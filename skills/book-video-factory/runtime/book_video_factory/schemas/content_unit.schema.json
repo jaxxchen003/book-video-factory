@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jaxxmind.local/book-video-factory/content_unit.schema.json",
+  "title": "dbs-content-system content unit snapshot",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "title",
+    "source_documents",
+    "source_authors",
+    "themes",
+    "keywords",
+    "status",
+    "canonical",
+    "version",
+    "created_at",
+    "updated_at",
+    "relationships",
+    "upstream_path",
+    "content_sha256",
+    "body_markdown"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^(QST|CON|OPI|CAS|SOL)-[0-9]{8}-[0-9]{3,}$"},
+    "type": {"enum": ["问题单元", "概念单元", "观点单元", "案例单元", "方案单元"]},
+    "title": {"type": "string", "minLength": 1},
+    "source_documents": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "source_authors": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "themes": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "keywords": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "status": {"type": "string", "minLength": 1},
+    "canonical": {"type": "boolean"},
+    "version": {"type": "integer", "minimum": 1},
+    "created_at": {"type": "string", "minLength": 1},
+    "updated_at": {"type": "string", "minLength": 1},
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "target"],
+        "properties": {
+          "type": {"enum": ["回应", "解释", "证明", "冲突"]},
+          "target": {"type": "string"},
+          "note": {"type": "string"}
+        }
+      }
+    },
+    "upstream_path": {"type": "string", "minLength": 1},
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "body_markdown": {"type": "string", "minLength": 1},
+    "question_text": {"type": "string", "minLength": 1},
+    "question_type": {"type": "string", "minLength": 1},
+    "user_stage": {"type": "string", "minLength": 1},
+    "applicable_topics": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "concept_definition": {"type": "string", "minLength": 1},
+    "concept_function": {"type": "string", "minLength": 1},
+    "core_claim": {"type": "string", "minLength": 1},
+    "claim_scope": {"type": "string", "minLength": 1},
+    "why_it_matters": {"type": "string", "minLength": 1},
+    "case_subject": {"type": "string", "minLength": 1},
+    "case_summary": {"type": "string", "minLength": 1},
+    "case_process": {"type": "string", "minLength": 1},
+    "case_result": {"type": "string", "minLength": 1},
+    "target_problem": {"type": "string", "minLength": 1},
+    "solution_summary": {"type": "string", "minLength": 1},
+    "action_steps": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "expected_result": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {"if": {"properties": {"type": {"const": "问题单元"}}}, "then": {"required": ["question_text", "question_type", "user_stage", "applicable_topics"]}},
+    {"if": {"properties": {"type": {"const": "概念单元"}}}, "then": {"required": ["concept_definition", "concept_function"]}},
+    {"if": {"properties": {"type": {"const": "观点单元"}}}, "then": {"required": ["core_claim", "claim_scope", "why_it_matters"]}},
+    {"if": {"properties": {"type": {"const": "案例单元"}}}, "then": {"required": ["case_subject", "case_summary", "case_process", "case_result"]}},
+    {"if": {"properties": {"type": {"const": "方案单元"}}}, "then": {"required": ["target_problem", "solution_summary", "action_steps", "expected_result"]}}
+  ]
+}

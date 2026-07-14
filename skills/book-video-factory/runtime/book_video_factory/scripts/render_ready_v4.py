@@ -24,6 +24,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Render ready V4 projects without touching incomplete ones")
     parser.add_argument("--warehouse", type=Path, required=True)
     parser.add_argument("--slug", action="append", default=[])
+    parser.add_argument(
+        "--release-id",
+        help="Bind generated QC reports to this release ID. Required before publish approval.",
+    )
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
     warehouse = args.warehouse.resolve()
@@ -41,7 +45,15 @@ def main() -> int:
             skipped.append(f"{project.name}:assets_incomplete")
             continue
         subprocess.run(["python3", "book_video_factory/scripts/build_batch_video_v3.py", str(project), "--release-version", "v4"], check=True)
-        subprocess.run(["python3", "book_video_factory/scripts/v4_post_qc.py", "--project", str(project)], check=True)
+        qc_command = [
+            "python3",
+            "book_video_factory/scripts/v4_post_qc.py",
+            "--project",
+            str(project),
+        ]
+        if args.release_id:
+            qc_command.extend(["--release-id", args.release_id])
+        subprocess.run(qc_command, check=True)
         rendered.append(project.name)
     print("rendered=" + ",".join(rendered))
     print("skipped=" + ",".join(skipped))

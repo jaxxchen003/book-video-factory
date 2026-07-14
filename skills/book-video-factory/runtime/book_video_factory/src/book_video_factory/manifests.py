@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
@@ -9,7 +10,7 @@ from typing import Any, Iterable
 
 
 def utc_now() -> str:
-    return datetime.now(UTC).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="microseconds")
 
 
 def sha256_file(path: Path) -> str:
@@ -30,6 +31,31 @@ def _project_file(project: Path, path: Path) -> tuple[Path, str]:
     if not resolved.is_file():
         raise FileNotFoundError(resolved)
     return resolved, relative.as_posix()
+
+
+def safe_project_output(project: Path, path: Path) -> Path:
+    """Return a project-local output path, rejecting symlinked ancestors."""
+    root = project.expanduser().resolve()
+    candidate = path.expanduser()
+    if not candidate.is_absolute():
+        candidate = root / candidate
+    # abspath normalizes dot segments without following symlinks.
+    candidate = Path(os.path.abspath(candidate))
+    try:
+        relative = candidate.relative_to(root)
+    except ValueError as error:
+        raise ValueError(f"output path is outside project: {path}") from error
+    current = root
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValueError(f"project output path uses a symlink: {current}")
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(root)
+    except ValueError as error:
+        raise ValueError(f"project output resolves outside project: {path}") from error
+    return candidate
 
 
 def artifact(project: Path, role: str, path: Path) -> dict[str, Any]:
@@ -88,7 +114,10 @@ def write_stage_manifest(
         "approval_event_ids": approval_event_ids or [],
         "cost_event_ids": cost_event_ids or [],
     }
-    path = root / "manifests" / "stages" / stage / f"{_filename_time(event_time)}-{identifier}.json"
+    path = safe_project_output(
+        root,
+        root / "manifests" / "stages" / stage / f"{_filename_time(event_time)}-{identifier}.json",
+    )
     return write_immutable_json(path, payload)
 
 
@@ -125,5 +154,8 @@ def record_approval(
         "evidence_refs": evidence_refs or [],
         "note": note,
     }
-    path = root / "logs" / "approval_events" / f"{_filename_time(event_time)}-{identifier}.json"
+    path = safe_project_output(
+        root,
+        root / "logs" / "approval_events" / f"{_filename_time(event_time)}-{identifier}.json",
+    )
     return write_immutable_json(path, payload)

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jaxxmind.local/book-video-factory/assembly_brief.schema.json",
+  "title": "Structured topic assembly brief",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "target_audience",
+    "assembly_reason",
+    "upstream_path",
+    "content_sha256",
+    "unit_ids",
+    "claim_ids",
+    "suggested_structure",
+    "expression_skeleton"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^ASM-[A-Z0-9-]+$"},
+    "title": {"type": "string", "minLength": 1},
+    "target_audience": {"type": "string", "minLength": 1},
+    "assembly_reason": {"type": "string", "minLength": 1},
+    "upstream_path": {"type": "string", "minLength": 1},
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "unit_ids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["QST", "CON", "OPI", "CAS", "SOL"],
+      "properties": {
+        "QST": {"type": "array", "items": {"type": "string", "pattern": "^QST-"}},
+        "CON": {"type": "array", "items": {"type": "string", "pattern": "^CON-"}},
+        "OPI": {"type": "array", "items": {"type": "string", "pattern": "^OPI-"}},
+        "CAS": {"type": "array", "items": {"type": "string", "pattern": "^CAS-"}},
+        "SOL": {"type": "array", "items": {"type": "string", "pattern": "^SOL-"}}
+      }
+    },
+    "claim_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "suggested_structure": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "expression_skeleton": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["opening", "middle", "closing"],
+      "properties": {
+        "opening": {"type": "string", "minLength": 1},
+        "middle": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "closing": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

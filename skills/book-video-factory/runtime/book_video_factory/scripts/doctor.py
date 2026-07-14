@@ -61,6 +61,7 @@ def main() -> int:
         default="planning",
     )
     parser.add_argument("--project", type=Path)
+    parser.add_argument("--release-id")
     args = parser.parse_args()
 
     local_render = args.profile in {"local-render", "production", "public-release"}
@@ -116,7 +117,9 @@ def main() -> int:
         else:
             profile_path = Path(__file__).resolve().parents[1] / "config/release_profiles/book-v4-bilingual-3x4.json"
             gate = evaluate_workflow_state(
-                args.project.expanduser().resolve(), ReleaseProfile.load(profile_path)
+                args.project.expanduser().resolve(),
+                ReleaseProfile.load(profile_path),
+                release_id=args.release_id,
             )
             checks.append(
                 {

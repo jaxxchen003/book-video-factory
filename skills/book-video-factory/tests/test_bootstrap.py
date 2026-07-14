@@ -54,11 +54,49 @@ class BootstrapTests(unittest.TestCase):
             self.assertEqual(len(template["lines"]), 15)
             self.assertTrue((project / "03_images_生成图片" / "approved" / "v4").is_dir())
             self.assertTrue((workspace / "book_video_factory/scripts/workflow.py").is_file())
+            self.assertTrue((workspace / "book_video_factory/scripts/content_bridge.py").is_file())
+            self.assertFalse(any((workspace / "book_video_factory").rglob("*.pyc")))
             self.assertTrue((workspace / "book_video_factory/config/release_profiles/book-v4-bilingual-3x4.json").is_file())
             self.assertEqual(
                 json.loads(original)["workflow"]["state_source"],
                 "derived_gate_evaluator",
             )
+
+    def test_content_system_mode_is_available_from_clean_bootstrap(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            bootstrap.bootstrap_workspace(workspace)
+            project, _ = bootstrap.create_project(
+                workspace,
+                "content-backed",
+                "Example Book",
+                "Example Author",
+                "content-system-backed",
+            )
+            payload = json.loads((project / "project.json").read_text(encoding="utf-8"))
+            self.assertEqual(payload["workflow"]["mode"], "content-system-backed")
+            self.assertTrue((project / "01_research_资料搜集/content_system/imports").is_dir())
+            self.assertTrue((project / "02_story_script_故事脚本/traceability").is_dir())
+
+    def test_existing_project_rejects_conflicting_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            bootstrap.bootstrap_workspace(workspace)
+            bootstrap.create_project(
+                workspace,
+                "content-backed",
+                "Example Book",
+                "Example Author",
+                "content-system-backed",
+            )
+            with self.assertRaisesRegex(ValueError, "already uses workflow mode"):
+                bootstrap.create_project(
+                    workspace,
+                    "content-backed",
+                    "Example Book",
+                    "Example Author",
+                    "single-book",
+                )
 
     def test_slug_rejects_unsafe_values(self) -> None:
         with self.assertRaises(Exception):

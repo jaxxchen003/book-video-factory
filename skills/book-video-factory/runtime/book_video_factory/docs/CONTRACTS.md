@@ -7,7 +7,8 @@
 - `release_profile`：平台、画布、脚本、场景、标题安全区和编码规格。
 - `stage_manifest`：一次阶段运行的输入、输出、hash、检查、工具与 release ID。
 - `approval_event`：人工审批决定以及审批时对应的文件 hash。
-- `claim / source_document / content_unit`：由后续 `content-system-backed` 模式接入；不复制上游内容系统的主题、关系和去重实现。
+- `source_document / content_unit / claim / assembly_brief`：由 `content-system-backed` 模式以不可变 JSON 快照接入；不复制上游内容系统的主题、关系和去重实现。
+- `traceability_map`：绑定 package、脚本、Claim、场景以及三类文件 hash。
 - `release_manifest`：后续 freeze-release 阶段生成的不可覆盖交付清单。
 
 ## 真源规则
@@ -17,6 +18,9 @@
 3. 发布状态必须由当前文件、manifest 和 approval event 重新计算。
 4. 审批事件绑定文件 hash；审批对象改变后旧审批自动失效。
 5. manifest 与 release 使用新文件写入，不允许覆盖。
+6. 内容快照和追溯图的当前选择通过 append-only activation event 记录，不能靠文件 mtime 猜测。
+
+完整桥接格式与命令见 [内容资产系统桥接](CONTENT_SYSTEM_BRIDGE.md)。
 
 ## 首个 release profile
 

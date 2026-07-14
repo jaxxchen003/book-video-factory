@@ -117,8 +117,118 @@ class ManifestTests(unittest.TestCase):
             script.write_text('{"version": 2}', encoding="utf-8")
             self.assertFalse(approval_is_current(project, event))
 
+    def test_stage_manifest_rejects_symlinked_output_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project = root / "project"
+            project.mkdir()
+            source = project / "input.txt"
+            output = project / "output.txt"
+            source.write_text("source", encoding="utf-8")
+            output.write_text("output", encoding="utf-8")
+            outside = root / "outside"
+            outside.mkdir()
+            manifests = project / "manifests"
+            manifests.symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                write_stage_manifest(
+                    project,
+                    stage="render",
+                    release_id="v1-r1",
+                    release_profile_id="book-v4-bilingual-3x4",
+                    inputs=[("script", source)],
+                    outputs=[("master", output)],
+                    checks=[],
+                )
+            self.assertEqual(list(outside.iterdir()), [])
+
 
 class GateTests(unittest.TestCase):
+    def test_same_timestamp_gate_decisions_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = initialize_project(Path(temp), "sample", "样书", "作者")
+            topic = project / "00_topic_选题/topic.json"
+            topic.write_text('{"approved": true}', encoding="utf-8")
+            timestamp = "2026-07-14T00:00:00+00:00"
+            record_approval(
+                project,
+                release_id="v1-r1",
+                gate="topic",
+                decision="approved",
+                reviewer="human",
+                subjects=[topic],
+                event_id="approval-a",
+                reviewed_at=timestamp,
+            )
+            record_approval(
+                project,
+                release_id="v1-r1",
+                gate="topic",
+                decision="revoked",
+                reviewer="human",
+                subjects=[topic],
+                event_id="approval-b",
+                reviewed_at=timestamp,
+            )
+            profile = ReleaseProfile.load(
+                ROOT / "config/release_profiles/book-v4-bilingual-3x4.json"
+            )
+            result = evaluate_workflow_state(project, profile, release_id="v1-r1")
+            self.assertEqual(result["derived_state"], "draft")
+            self.assertNotIn("topic", result["current_approval_gates"])
+
+    def test_release_scope_never_combines_approvals_from_two_releases(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = initialize_project(Path(temp), "sample", "样书", "作者")
+            topic = project / "00_topic_选题/topic.json"
+            script = project / "02_story_script_故事脚本/script.v2.bilingual.json"
+            topic.write_text('{"approved": true}', encoding="utf-8")
+            script.write_text('{"lines": []}', encoding="utf-8")
+            record_approval(
+                project,
+                release_id="v1-r1",
+                gate="topic",
+                decision="approved",
+                reviewer="human",
+                subjects=[topic],
+            )
+            record_approval(
+                project,
+                release_id="v2-r1",
+                gate="script",
+                decision="approved",
+                reviewer="human",
+                subjects=[script],
+            )
+            profile = ReleaseProfile.load(
+                ROOT / "config/release_profiles/book-v4-bilingual-3x4.json"
+            )
+            ambiguous = evaluate_workflow_state(project, profile)
+            self.assertIsNone(ambiguous["release_id"])
+            self.assertFalse(ambiguous["release_scope_valid"])
+            self.assertEqual(ambiguous["derived_state"], "invalid")
+            old_release = evaluate_workflow_state(project, profile, release_id="v1-r1")
+            self.assertEqual(old_release["derived_state"], "topic_approved")
+            self.assertEqual(old_release["current_approval_gates"], ["topic"])
+
+    def test_qc_report_must_match_active_release(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = initialize_project(Path(temp), "sample", "样书", "作者")
+            qc = project / "09_qc_质检/v4_release_gate.json"
+            qc.write_text(
+                json.dumps({"release_id": "v1-r1", "local_master_status": "pass"}),
+                encoding="utf-8",
+            )
+            profile = ReleaseProfile.load(
+                ROOT / "config/release_profiles/book-v4-bilingual-3x4.json"
+            )
+            self.assertTrue(
+                evaluate_workflow_state(project, profile, release_id="v1-r1")["qc_passed"]
+            )
+            self.assertFalse(
+                evaluate_workflow_state(project, profile, release_id="v2-r1")["qc_passed"]
+            )
+
     def test_project_status_cannot_bypass_derived_gate(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = initialize_project(Path(temp), "sample", "样书", "作者")

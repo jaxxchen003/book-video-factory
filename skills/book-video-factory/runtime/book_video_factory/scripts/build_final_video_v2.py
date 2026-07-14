@@ -26,6 +26,7 @@ import _bootstrap  # noqa: F401
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
 
 from book_video_factory.audio import splice_asr_timestamps
+from book_video_factory.scene_contract import V4_SCENE_LINE_CONTRACT, V4_TIMELINE_SCENES
 
 
 FACTORY = Path(__file__).resolve().parents[1]
@@ -353,20 +354,14 @@ def make_overlay_assets(style: dict[str, Any], lines: list[TimedLine], output_di
 
 def create_scene_timeline(lines: list[TimedLine], montage_start: float, montage_end: float, total_duration: float) -> list[dict[str, Any]]:
     by_id = {line.line_id: line for line in lines}
-    groups = [
-        ("HOOK", ["V01", "V02"], "03_images_生成图片/approved/S01.png"),
-        ("BOOK", ["V03"], "03_images_生成图片/v2/book-cover-composite.png"),
-        ("THESIS", ["V04"], "03_images_生成图片/approved/S02.png"),
-        ("RELATION", ["V05", "V06"], "03_images_生成图片/approved/S04.png"),
-        ("SUPPORT", ["V07", "V08"], "03_images_生成图片/approved/S05.png"),
-        ("BOUNDARIES", ["V09"], "03_images_生成图片/approved/S06.png"),
-        ("FIRST_STEP", ["V10"], "03_images_生成图片/approved/S07.png"),
-        ("QUESTION", ["V11"], "03_images_生成图片/approved/S08.png"),
-        ("SELF_CARE", ["V12"], "03_images_生成图片/approved/S09.png"),
-        ("LOVE", ["V13"], "03_images_生成图片/approved/S10.png"),
-        ("RAIN", ["V14"], "03_images_生成图片/approved/S11.png"),
-        ("DAWN", ["V15"], "03_images_生成图片/approved/S12.png"),
-    ]
+    groups = []
+    for timeline_id, scene_id in V4_TIMELINE_SCENES:
+        asset = (
+            "03_images_生成图片/v2/book-cover-composite.png"
+            if timeline_id == "BOOK"
+            else f"03_images_生成图片/approved/{scene_id}.png"
+        )
+        groups.append((timeline_id, list(V4_SCENE_LINE_CONTRACT[scene_id]), asset))
     spans = [(min(by_id[item].start for item in ids), max(by_id[item].end for item in ids)) for _, ids, _ in groups]
     timeline: list[dict[str, Any]] = []
     for index, (scene_id, ids, asset) in enumerate(groups):

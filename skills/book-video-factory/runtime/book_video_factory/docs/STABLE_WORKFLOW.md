@@ -41,7 +41,8 @@ draft → topic_approved → source_audited → script_reviewed
 
 ```bash
 python3 book_video_factory/scripts/workflow.py evaluate \
-  --project book_video_warehouse/projects/<slug>
+  --project book_video_warehouse/projects/<slug> \
+  --release-id <release-id>
 ```
 
 记录人工审批时必须绑定当前文件 hash：
@@ -54,7 +55,7 @@ python3 book_video_factory/scripts/workflow.py approve \
   --subject 02_story_script_故事脚本/script.v2.bilingual.json
 ```
 
-审批后如果文件发生变化，审批自动失效。阶段 manifest 使用 `manifest-stage` 创建，已存在的 manifest 拒绝覆盖。
+审批后如果文件发生变化，审批自动失效。状态评估只使用指定 release 的审批；QC 也必须记录相同 `release_id`。阶段 manifest 使用 `manifest-stage` 创建，已存在的 manifest 拒绝覆盖。
 
 ## 成本记录
 

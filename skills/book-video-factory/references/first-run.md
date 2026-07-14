@@ -19,6 +19,29 @@ This skill gives Codex a portable operating contract plus the deterministic fact
 - **Local renderer path:** install Python 3.11+, Pillow, FFmpeg/FFprobe, and a permitted ASR/TTS implementation. Keep tool paths/configuration in the workspace, not in the Skill.
 - **Editor-first path:** use ChatCut only if the user has installed/authenticated it. Keep the local master and subtitle file before importing. If ChatCut is unavailable, continue with local files and explain the missing polish step.
 - **Research fallback:** if WeRead or another credentialed source is unavailable, use attributable public metadata or user-provided sources and record the source limitation. Never circumvent access controls.
+- **Content-system-backed path:** create the project with `--mode content-system-backed`, import a validated `dbs-content-system` JSON snapshot, and attach traceability after the script and scene manifest exist. The Skill preserves upstream relative paths and hashes but never edits the upstream content system.
+
+## Content-system bridge sequence
+
+```bash
+python3 book_video_factory/scripts/content_bridge.py export-dbs \
+  --content-root /path/to/content-system \
+  --assembly /path/to/content-system/06-选题装配/topic.md \
+  --output /path/to/package.json
+python3 book_video_factory/scripts/content_bridge.py validate-package --package /path/to/package.json
+python3 book_video_factory/scripts/content_bridge.py import-package \
+  --project book_video_warehouse/projects/<slug> --package /path/to/package.json
+python3 book_video_factory/scripts/content_bridge.py attach-traceability \
+  --project book_video_warehouse/projects/<slug> --map /path/to/traceability.json
+python3 book_video_factory/scripts/workflow.py approve \
+  --project book_video_warehouse/projects/<slug> --release-id <release-id> \
+  --gate traceability --decision approved --reviewer '<reviewer>' \
+  --subject 02_story_script_故事脚本/traceability/<release-id>/<attached-map>.json
+python3 book_video_factory/scripts/content_bridge.py status \
+  --project book_video_warehouse/projects/<slug> --require traceability
+```
+
+See `book_video_factory/docs/CONTENT_SYSTEM_BRIDGE.md` in the bootstrapped runtime for the package contract and fail-closed rules.
 
 ## First-run review questions
 

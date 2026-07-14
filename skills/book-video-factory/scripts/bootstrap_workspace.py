@@ -16,7 +16,9 @@ PROJECT_DIRS = (
     "01_research_资料搜集/raw",
     "01_research_资料搜集/normalized",
     "01_research_资料搜集/sources/cover",
+    "01_research_资料搜集/content_system/imports",
     "02_story_script_故事脚本",
+    "02_story_script_故事脚本/traceability",
     "03_images_生成图片/prompts",
     "03_images_生成图片/generated",
     "03_images_生成图片/approved/v4",
@@ -67,6 +69,8 @@ def bootstrap_workspace(workspace: Path) -> list[Path]:
         raise FileNotFoundError(f"bundled factory runtime is missing: {BUNDLED_FACTORY}")
     for source in sorted(BUNDLED_FACTORY.rglob("*")):
         relative = source.relative_to(BUNDLED_FACTORY)
+        if "__pycache__" in relative.parts or source.suffix == ".pyc":
+            continue
         destination = factory / relative
         if source.is_dir():
             destination.mkdir(parents=True, exist_ok=True)
@@ -86,8 +90,33 @@ def bootstrap_workspace(workspace: Path) -> list[Path]:
     return created
 
 
-def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple[Path, list[Path]]:
+def create_project(
+    workspace: Path,
+    slug: str,
+    title: str,
+    author: str,
+    mode: str = "single-book",
+) -> tuple[Path, list[Path]]:
+    if mode not in {"single-book", "content-system-backed"}:
+        raise ValueError(f"unsupported workflow mode: {mode}")
     project = workspace / "book_video_warehouse" / "projects" / slug
+    contract_path = project / "project.json"
+    if contract_path.is_file():
+        try:
+            existing = json.loads(contract_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError(f"existing project contract is unreadable: {contract_path}") from error
+        workflow = existing.get("workflow") if isinstance(existing, dict) else None
+        existing_mode = (
+            str(workflow.get("mode") or "single-book")
+            if isinstance(workflow, dict)
+            else "single-book"
+        )
+        if existing_mode != mode:
+            raise ValueError(
+                f"project {slug} already uses workflow mode {existing_mode}; "
+                f"refusing requested mode {mode}"
+            )
     created: list[Path] = []
     for relative in PROJECT_DIRS:
         target = project / relative
@@ -96,7 +125,7 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
         if write_text_if_missing(keep, ""):
             created.append(keep)
     if write_json_if_missing(
-        project / "project.json",
+        contract_path,
         {
             "schema_version": "1.0",
             "project_id": slug,
@@ -105,7 +134,7 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
             "current_stage": "00_topic_选题",
             "created_at": utc_now(),
             "workflow": {
-                "mode": "single-book",
+                "mode": mode,
                 "release_profile_id": "book-v4-bilingual-3x4",
                 "state_source": "derived_gate_evaluator",
                 "status_field_role": "compatibility_cache_only"
@@ -119,7 +148,7 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
             },
         },
     ):
-        created.append(project / "project.json")
+        created.append(contract_path)
     if write_json_if_missing(
         project / "02_story_script_故事脚本" / "script.v2.bilingual.template.json",
         {
@@ -170,6 +199,11 @@ def main() -> int:
     parser.add_argument("--slug", type=valid_slug)
     parser.add_argument("--book-title")
     parser.add_argument("--author")
+    parser.add_argument(
+        "--mode",
+        choices=("single-book", "content-system-backed"),
+        default="single-book",
+    )
     args = parser.parse_args()
     project_args = (args.slug, args.book_title, args.author)
     if any(project_args) and not all(project_args):
@@ -180,7 +214,13 @@ def main() -> int:
     created = bootstrap_workspace(workspace)
     payload: dict[str, Any] = {"workspace": str(workspace), "created": [str(path.relative_to(workspace)) for path in created]}
     if args.slug:
-        project, project_created = create_project(workspace, args.slug, args.book_title, args.author)
+        project, project_created = create_project(
+            workspace,
+            args.slug,
+            args.book_title,
+            args.author,
+            args.mode,
+        )
         payload["project"] = str(project.relative_to(workspace))
         payload["project_created"] = [str(path.relative_to(workspace)) for path in project_created]
     print(json.dumps(payload, ensure_ascii=False, indent=2))

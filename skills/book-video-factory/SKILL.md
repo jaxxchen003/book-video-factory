@@ -1,6 +1,6 @@
 ---
 name: book-video-factory
-description: Create or operate a portable, auditable Chinese book-review short-video workflow from a clean local workspace. Use when starting a book-video factory, turning an approved book topic into a 3:4 bilingual short-video package, collecting rights-aware sources, generating a script/assets/voice/BGM plan, recording run cost, or preparing a local master for optional ChatCut fine editing.
+description: Create or operate a portable, auditable Chinese book-review short-video workflow from a clean local workspace. Use when starting a book-video factory, turning an approved book topic into a 3:4 bilingual short-video package, importing dbs-content-system source documents and QST/CON/OPI/CAS/SOL content units, linking script claims to evidence and scenes, collecting rights-aware assets, recording run cost, or preparing a local master for optional ChatCut fine editing.
 ---
 
 # 图书号短视频工厂
@@ -24,6 +24,8 @@ description: Create or operate a portable, auditable Chinese book-review short-v
      --workspace . --slug <slug> --book-title '<title>' --author '<author>'
    ```
 
+   If the topic comes from a structured content asset system, add `--mode content-system-backed`. This mode requires a validated content package and traceability map before assets can pass their gate.
+
 4. Read `references/first-run.md` before generating the first production package. Read `references/quality-gates.md` before declaring a release ready.
 
 ## Working model
@@ -45,10 +47,13 @@ description: Create or operate a portable, auditable Chinese book-review short-v
 ## Workflow contracts
 
 - Use `config/release_profiles/book-v4-bilingual-3x4.json` as the named V4 contract instead of treating V4 dimensions and bilingual layout as universal constants.
-- Use `scripts/workflow.py evaluate` to derive workflow state. `project.json.status` is not an approval mechanism.
+- Use `scripts/workflow.py evaluate --release-id <release-id>` to derive a release-scoped workflow state. `project.json.status` is not an approval mechanism, and approvals from different releases are never combined.
 - Record human decisions with `scripts/workflow.py approve`; approvals bind to the reviewed file hash and become stale after edits.
 - Use `scripts/workflow.py manifest-stage` for immutable stage manifests with input/output hashes.
 - Long titles are pixel-measured, semantically wrapped to at most two lines, and fail closed if they cannot fit the configured safe area.
+- Keep `dbs-content-system` upstream: it owns source audits, `QST / CON / OPI / CAS / SOL`, theme maps, relationships, deduplication, canonical versions, and assembly. Do not reproduce those algorithms in this Skill.
+- For `content-system-backed`, use `scripts/content_bridge.py export-dbs`, `validate-package`, `import-package`, `attach-traceability`, and `status`. `export-dbs` is serialization only; it does not perform upstream semantic work. Imports and active-version changes are append-only and hash-bound.
+- A valid bridge package contains `source_document / content_unit / claim / assembly_brief`; the traceability map connects every script line to reviewed Claim evidence or an explicit editorial exemption, and to the renderer's actual scene contract. A human `traceability` approval bound to that map is required before `assets_ready`.
 
 ## Required release gates
 

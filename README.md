@@ -25,6 +25,8 @@ The Skill is available on the next turn after installation.
 - Writes an append-only run-cost ledger that never invents token values.
 - Derives fail-closed workflow state from immutable manifests and hash-bound approval events.
 - Fits long book titles to a named release profile with measured safe margins and semantic wrapping.
+- Supports `single-book` and `content-system-backed` projects. The latter imports immutable `dbs-content-system` snapshots and validates `source_document / content_unit / claim / assembly_brief` objects.
+- Records an auditable script-line → Claim → content-unit/source plus scene traceability map, backed by one renderer scene contract.
 
 ## Example outputs / 示例成片
 
@@ -77,6 +79,26 @@ python3 skills/book-video-factory/scripts/doctor.py --profile planning
 python3 skills/book-video-factory/scripts/bootstrap_workspace.py --workspace . \
   --slug my-first-book --book-title 'Example Book' --author 'Example Author'
 ```
+
+For a project backed by an upstream content asset system:
+
+```bash
+python3 skills/book-video-factory/scripts/bootstrap_workspace.py --workspace . \
+  --slug my-topic --book-title 'Example Book' --author 'Example Author' \
+  --mode content-system-backed
+
+python3 book_video_factory/scripts/content_bridge.py export-dbs \
+  --content-root /path/to/content-system \
+  --assembly /path/to/content-system/06-选题装配/topic.md \
+  --output /path/to/content-package.json
+python3 book_video_factory/scripts/content_bridge.py validate-package \
+  --package /path/to/content-package.json
+python3 book_video_factory/scripts/content_bridge.py import-package \
+  --project book_video_warehouse/projects/my-topic \
+  --package /path/to/content-package.json
+```
+
+The upstream system remains authoritative for audits, content-unit extraction, theme maps, relationships, deduplication, canonical versions, and topic assembly. The video factory only consumes a validated snapshot and never rewrites the upstream system.
 
 ## Safety and licence boundary
 
