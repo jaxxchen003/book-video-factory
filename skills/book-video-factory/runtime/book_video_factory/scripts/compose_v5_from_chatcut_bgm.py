@@ -20,6 +20,7 @@ from pathlib import Path
 import _bootstrap  # noqa: F401
 import build_batch_video_v3 as batch
 import build_final_video_v2 as v2
+from book_video_factory.manifests import write_stage_manifest
 
 
 AUDIO_EXTENSIONS = (".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg")
@@ -175,6 +176,26 @@ def compose(project: Path, force: bool, release_label: str) -> tuple[str, str]:
         },
     }
     manifest.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    write_stage_manifest(
+        project,
+        stage="render.v5",
+        release_id=release_label,
+        release_profile_id="book-v4-bilingual-3x4",
+        inputs=[
+            ("visual_base", base),
+            ("script", project / "02_story_script_故事脚本/script.v2.bilingual.json"),
+            ("title_layout", title_layout),
+            ("voice", voice),
+            ("bgm", music),
+            ("intro_sfx", stinger),
+        ],
+        outputs=[("render", target), ("delivery", delivery)],
+        checks=[
+            {"id": "release_specific_title", "result": "pass", "severity": "error"},
+            {"id": "h264_aac_720x960", "result": "pass", "severity": "error"},
+        ],
+        producer="compose_v5_from_chatcut_bgm.py",
+    )
     return slug, f"rendered {target.name}"
 
 
