@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "book-video-factory"
+version = "0.1.0"
+description = "Local-first pipeline foundation for automated Chinese book short videos"
+requires-python = ">=3.11"
+dependencies = [
+  "Pillow>=10.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

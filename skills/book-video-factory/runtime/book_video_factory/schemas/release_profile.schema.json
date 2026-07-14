@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jaxxmind.local/schemas/release_profile.schema.json",
+  "title": "Book video release profile",
+  "type": "object",
+  "required": ["schema_version", "profile_id", "renderer", "canvas", "script", "visual", "typography", "audio", "video"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "profile_id": {"type": "string", "minLength": 1},
+    "profile_revision": {"type": "integer", "minimum": 1},
+    "renderer": {"const": "build_batch_video_v3"},
+    "canvas": {
+      "type": "object",
+      "required": ["width", "height", "fps"],
+      "properties": {
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1},
+        "fps": {"type": "integer", "minimum": 1},
+        "aspect_ratio": {"type": "string"}
+      }
+    },
+    "script": {"type": "object"},
+    "visual": {"type": "object"},
+    "typography": {"type": "object"},
+    "audio": {"type": "object"},
+    "video": {"type": "object"}
+  },
+  "additionalProperties": true
+}

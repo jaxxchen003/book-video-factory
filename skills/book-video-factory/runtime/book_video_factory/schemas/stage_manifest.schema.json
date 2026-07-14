@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jaxxmind.local/schemas/stage_manifest.schema.json",
+  "title": "Book video stage manifest",
+  "type": "object",
+  "required": ["schema_version", "manifest_id", "project_id", "stage", "release_id", "release_profile_id", "producer", "recorded_at", "status", "inputs", "outputs", "checks"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "manifest_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "stage": {"type": "string", "minLength": 1},
+    "release_id": {"type": "string", "minLength": 1},
+    "release_profile_id": {"type": "string", "minLength": 1},
+    "producer": {"type": "object"},
+    "recorded_at": {"type": "string"},
+    "status": {"enum": ["success", "failed"]},
+    "inputs": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+    "outputs": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+    "checks": {"type": "array"},
+    "approval_event_ids": {"type": "array", "items": {"type": "string"}},
+    "cost_event_ids": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["role", "path", "bytes", "sha256"],
+      "properties": {
+        "role": {"type": "string"},
+        "path": {"type": "string"},
+        "bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

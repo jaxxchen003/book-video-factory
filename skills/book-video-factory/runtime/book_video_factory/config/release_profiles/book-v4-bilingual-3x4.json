@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "book-v4-bilingual-3x4",
+  "profile_revision": 1,
+  "renderer": "build_batch_video_v3",
+  "canvas": {
+    "width": 720,
+    "height": 960,
+    "fps": 30,
+    "aspect_ratio": "3:4"
+  },
+  "script": {
+    "language_mode": "bilingual",
+    "line_count": 15
+  },
+  "visual": {
+    "scene_count": 12,
+    "scene_format": "png",
+    "unique_by": "sha256"
+  },
+  "typography": {
+    "title_safe_margin_x_px": 56,
+    "title_max_width_px": 608,
+    "title_max_lines": 2,
+    "title_max_font_size_px": 70,
+    "title_min_font_size_px": 34,
+    "title_fit_strategy": "semantic_two_line_then_shrink",
+    "overflow_policy": "fail"
+  },
+  "audio": {
+    "codec": "aac",
+    "target_lufs": -15.0,
+    "true_peak_dbfs": -1.2
+  },
+  "video": {
+    "codec": "h264"
+  }
+}

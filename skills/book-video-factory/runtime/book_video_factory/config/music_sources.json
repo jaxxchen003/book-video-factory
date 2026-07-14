@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "default_release_policy": "commercial-capable",
+  "providers": {
+    "freesound": {
+      "status": "configured",
+      "purpose": "auditable BGM candidate research and non-commercial internal audition",
+      "search_contract": "Record the full Chinese music intent, but search Freesound with a concise English keyword query such as 'cinematic ambient piano'.",
+      "api_version": "v2",
+      "credential": {
+        "api_key_env": "FREESOUND_API_KEY",
+        "api_key_keychain_service": "book-video-factory.freesound.api-key",
+        "client_id_env": "FREESOUND_CLIENT_ID",
+        "client_id_keychain_service": "book-video-factory.freesound.client-id"
+      },
+      "accepted_sound_licenses": ["CC0-1.0", "CC-BY-4.0"],
+      "rejected_sound_licenses": ["CC-BY-NC", "CC-BY-ND", "CC-BY-SA", "unknown"],
+      "commercial_api_gate": {
+        "required": true,
+        "authorization_env": "FREESOUND_COMMERCIAL_API_AUTHORIZED",
+        "default_status": "noncommercial_preview_only",
+        "operator_record_required": "Written commercial API authorization from Freesound/MTG must be retained outside the repository before this provider can feed a public or monetized render."
+      }
+    }
+  }
+}

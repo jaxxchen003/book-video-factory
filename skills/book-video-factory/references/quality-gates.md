@@ -2,9 +2,10 @@
 
 ## Project contract
 
-- `project.json` exists and identifies the topic, book, release version, and status.
+- `project.json` exists and identifies the topic, book, workflow mode, and release profile. Its status field is a compatibility cache, not the publish-state source of truth.
 - Each stage writes a manifest or an append-only cost event.
 - A revision writes a new release directory; no existing delivery is overwritten.
+- `workflow.py evaluate` derives the current state from files, hashes, manifests, and approval events; direct JSON edits cannot advance a gate.
 
 ## Editorial and rights gates
 

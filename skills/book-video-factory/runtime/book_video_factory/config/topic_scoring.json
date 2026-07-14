@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "score_scale": 100,
+  "weights": {
+    "demand": 25,
+    "growth_velocity": 20,
+    "engagement_quality": 15,
+    "content_gap": 15,
+    "book_evidence": 15,
+    "production_fit": 10
+  },
+  "penalties": {
+    "saturation": 15,
+    "rights_or_source_risk": 25,
+    "brand_safety_risk": 30,
+    "weak_book_relevance": 20
+  },
+  "decision_thresholds": {
+    "auto_enrich": 55,
+    "human_shortlist": 68,
+    "priority_production": 80
+  },
+  "minimum_evidence": {
+    "independent_platforms": 2,
+    "public_signal_records": 3,
+    "book_source_records": 2
+  },
+  "freshness_half_life_days": {
+    "breaking": 3,
+    "trend": 14,
+    "evergreen": 90
+  }
+}

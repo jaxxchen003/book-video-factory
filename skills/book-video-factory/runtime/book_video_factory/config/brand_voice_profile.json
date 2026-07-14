@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "book_channel_b_female_warm_healing_v1",
+  "status": "active",
+  "selected_from": "B_female_warm_healing",
+  "label": "B｜温暖治愈女声",
+  "provider": "OpenBMB/VoxCPM2",
+  "mode": "ultimate_clone",
+  "control": "28岁左右的普通话女性，音色温暖柔和，亲近、治愈但不煽情，语速中等偏慢，吐字清楚，带轻微微笑感",
+  "clone": {
+    "reference_audio": "../voice_profiles/book_channel_b_female_warm_healing_v1/reference.wav",
+    "prompt_audio": "../voice_profiles/book_channel_b_female_warm_healing_v1/reference.wav",
+    "prompt_text": "真正能为人生兜底的，从来不是别人，而是那个越来越清醒、越来越坚定的自己。",
+    "reference_sha256": "6999ca65be13f0deaed7c4fb02c00dfbbbfc18d7435f6844423f4395dbbe46a1",
+    "source": "synthetic_voice_design_selected_by_user"
+  },
+  "generation": {
+    "model_path": "~/.local/share/voxcpm-models/VoxCPM2-modelscope",
+    "device": "mps",
+    "seed": 1102,
+    "cfg_value": 2.0,
+    "inference_timesteps": 10,
+    "sample_rate": 48000,
+    "load_denoiser": false,
+    "optimize": false
+  },
+  "selection": {
+    "selected_by": "user",
+    "selected_at": "2026-07-11",
+    "source_audition": "book_video_warehouse/projects/doudi-qingshan/05_voice_人声/auditions/mastered/B_female_warm_healing_mastered.wav"
+  },
+  "policy": {
+    "use_for_all_book_channel_narration": true,
+    "allow_per_video_voice_change": false,
+    "allow_style_adjustment": true,
+    "allowed_adjustments": [
+      "pace",
+      "pause",
+      "emphasis"
+    ]
+  }
+}

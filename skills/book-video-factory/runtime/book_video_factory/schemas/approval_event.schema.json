@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jaxxmind.local/schemas/approval_event.schema.json",
+  "title": "Book video approval event",
+  "type": "object",
+  "required": ["schema_version", "event_id", "project_id", "release_id", "gate", "decision", "reviewer", "reviewed_at", "subjects"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "event_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "release_id": {"type": "string", "minLength": 1},
+    "gate": {"type": "string", "minLength": 1},
+    "decision": {"enum": ["approved", "rejected", "revoked"]},
+    "reviewer": {"type": "string", "minLength": 1},
+    "reviewed_at": {"type": "string"},
+    "subjects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "note": {"type": "string"}
+  }
+}

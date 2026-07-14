@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "model": "OpenBMB/VoxCPM2",
+  "model_path": "~/.local/share/voxcpm-models/VoxCPM2-modelscope",
+  "sample_text": "真正能为人生兜底的，从来不是别人，而是那个越来越清醒、越来越坚定的自己。",
+  "generation": {
+    "device": "mps",
+    "cfg_value": 2.0,
+    "inference_timesteps": 10,
+    "sample_rate": 48000,
+    "load_denoiser": false,
+    "optimize": false
+  },
+  "candidates": [
+    {
+      "id": "A_female_calm_low",
+      "label": "A｜清醒克制女声",
+      "recommended": false,
+      "seed": 1101,
+      "control": "30岁左右的普通话女性，音色清透偏低，知性、克制、可信，不甜腻，语速稍慢，停顿自然，句尾收敛，像在安静地讲一本书"
+    },
+    {
+      "id": "B_female_warm_healing",
+      "label": "B｜温暖治愈女声",
+      "recommended": true,
+      "seed": 1102,
+      "control": "28岁左右的普通话女性，音色温暖柔和，亲近、治愈但不煽情，语速中等偏慢，吐字清楚，带轻微微笑感"
+    },
+    {
+      "id": "C_female_documentary",
+      "label": "C｜中性纪录片女声",
+      "recommended": false,
+      "seed": 1103,
+      "control": "35岁左右的普通话女性，中低音，沉稳、理性、有阅历，纪录片旁白质感，语速稳定，情绪克制，重点词轻微加重"
+    },
+    {
+      "id": "D_male_mature_restrained",
+      "label": "D｜成熟克制男声",
+      "recommended": false,
+      "seed": 1104,
+      "control": "35岁左右的普通话男性，中低音，成熟、平静、可信，像深夜电台讲书，语速稍慢，不端腔，不夸张，不带广告感"
+    }
+  ]
+}

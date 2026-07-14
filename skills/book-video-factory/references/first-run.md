@@ -2,7 +2,7 @@
 
 ## What installation gives you
 
-This skill gives Codex a portable operating contract, a workspace bootstrapper, dependency diagnostics, and a cost ledger. It does not contain a voice, cover, BGM, reference-video audio, book text, external credentials, or a publishing account.
+This skill gives Codex a portable operating contract plus the deterministic factory runtime: renderer scripts, release profiles, schemas, dependency diagnostics, title safe-area logic, immutable manifests, hash-bound approvals, and the cost ledger. It does not contain a voice, cover, BGM, SFX, reference video, book text, external credentials, or a publishing account.
 
 ## Minimum inputs before rendering
 

@@ -1,0 +1,59 @@
+{
+  "schema_version": "2.0",
+  "name": "book-editorial-bilingual-v2",
+  "canvas": {
+    "domestic": {"width": 720, "height": 960, "fps": 30},
+    "international": {"width": 1080, "height": 1920, "fps": 30}
+  },
+  "fonts": {
+    "title": "resources/fonts/SmileySans-Oblique.otf",
+    "title_license": "resources/fonts/SmileySans-OFL.txt",
+    "chinese": "/System/Library/Fonts/Supplemental/Songti.ttc",
+    "chinese_title_index": 0,
+    "chinese_body_index": 1,
+    "english": "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+    "portability_note": "Songti SC and Times New Roman are preferred macOS fonts. On other systems the renderer falls back to the bundled OFL SmileySans font until the operator configures licensed CJK and English fonts."
+  },
+  "palette": {
+    "background": "#050505",
+    "primary": "#FAF7F0",
+    "secondary": "#D8D0C4",
+    "accent": "#B76031"
+  },
+  "title_layout": {
+    "safe_margin_x_px": 56,
+    "top_px": 62,
+    "top_px_tall": 104,
+    "max_font_size_px": 70,
+    "min_font_size_px": 34,
+    "max_lines": 2,
+    "line_gap_px": 8,
+    "rule_gap_px": 14,
+    "author_gap_px": 20,
+    "author_max_font_size_px": 31,
+    "author_min_font_size_px": 20
+  },
+  "intro": {
+    "montage_duration_seconds": 0.96,
+    "card_duration_seconds": 0.12,
+    "target_cover_hold_seconds": 0.9,
+    "topics": [
+      {"zh": "自我", "en": "SELF", "scene": "S01"},
+      {"zh": "关系", "en": "RELATIONSHIPS", "scene": "S04"},
+      {"zh": "成长", "en": "GROWTH", "scene": "S07"},
+      {"zh": "边界", "en": "BOUNDARIES", "scene": "S05"},
+      {"zh": "勇气", "en": "COURAGE", "scene": "S11"},
+      {"zh": "自由", "en": "FREEDOM", "scene": "S12"},
+      {"zh": "行动", "en": "ACTION", "scene": "S08"},
+      {"zh": "爱", "en": "LOVE", "scene": "S10"}
+    ]
+  },
+  "audio": {
+    "bgm_start_offset_seconds": 18.0,
+    "bgm_target_lufs": -22.0,
+    "body_duck_db": 5.0,
+    "montage_boost_db": 14.0,
+    "final_target_lufs": -15.0,
+    "true_peak_dbfs": -1.2
+  }
+}

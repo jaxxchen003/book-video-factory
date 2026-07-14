@@ -5,30 +5,36 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
 PROJECT_DIRS = (
-    "00_topic",
-    "01_research/raw",
-    "01_research/normalized",
-    "01_research/sources/cover",
-    "02_story_script",
-    "03_images/prompts",
-    "03_images/generated",
-    "03_images/approved/v4",
-    "04_copy",
-    "05_voice",
-    "06_music",
-    "07_timeline",
-    "08_render/preview",
-    "08_render/final",
-    "09_qc",
-    "10_delivery",
+    "00_topic_选题",
+    "01_research_资料搜集/raw",
+    "01_research_资料搜集/normalized",
+    "01_research_资料搜集/sources/cover",
+    "02_story_script_故事脚本",
+    "03_images_生成图片/prompts",
+    "03_images_生成图片/generated",
+    "03_images_生成图片/approved/v4",
+    "04_copy_文案",
+    "05_voice_人声",
+    "06_music_音乐",
+    "07_timeline_时间线",
+    "08_render_合成/preview",
+    "08_render_合成/final",
+    "09_qc_质检",
+    "10_delivery_交付",
+    "manifests/stages",
+    "logs/approval_events",
     "logs",
 )
+
+SKILL_ROOT = Path(__file__).resolve().parents[1]
+BUNDLED_FACTORY = SKILL_ROOT / "runtime" / "book_video_factory"
 
 
 def utc_now() -> str:
@@ -57,33 +63,19 @@ def bootstrap_workspace(workspace: Path) -> list[Path]:
     factory = workspace / "book_video_factory"
     warehouse = workspace / "book_video_warehouse"
     created: list[Path] = []
-    for directory in (factory / "config", factory / "docs", warehouse / "projects", warehouse / "operations", warehouse / "reports"):
+    if not BUNDLED_FACTORY.is_dir():
+        raise FileNotFoundError(f"bundled factory runtime is missing: {BUNDLED_FACTORY}")
+    for source in sorted(BUNDLED_FACTORY.rglob("*")):
+        relative = source.relative_to(BUNDLED_FACTORY)
+        destination = factory / relative
+        if source.is_dir():
+            destination.mkdir(parents=True, exist_ok=True)
+        elif not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+            created.append(destination)
+    for directory in (warehouse / "projects", warehouse / "operations", warehouse / "reports"):
         directory.mkdir(parents=True, exist_ok=True)
-    files = {
-        factory / "config/style.json": {
-            "schema_version": "1.0",
-            "canvas": {"width": 720, "height": 960, "fps": 30},
-            "brand": {"label": "YOUR BRAND", "title_font": "set a locally licensed font path before render"},
-            "caption": {"mode": "bilingual", "safe_margin_px": 56},
-            "release": {"default_version": "v4"},
-        },
-        factory / "config/voice_profile.example.json": {
-            "schema_version": "1.0",
-            "status": "configure_before_use",
-            "mode": "voice_design_or_authorized_clone",
-            "authorization_required": True,
-            "note": "Do not add a voice recording to source control. Store user-authorized media outside this repository.",
-        },
-        factory / "docs/WORKSPACE_CONTRACT.md": {
-            "schema_version": "1.0",
-            "source_of_truth": "local release files",
-            "chatcut": "optional derivative-editing layer; never overwrite the local master",
-            "publish_requires": ["rights_review", "native_language_review", "human_publish_approval"],
-        },
-    }
-    for path, payload in files.items():
-        if write_json_if_missing(path, payload):
-            created.append(path)
     readme = warehouse / "README.md"
     if write_text_if_missing(
         readme,
@@ -110,9 +102,14 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
             "project_id": slug,
             "book": {"title": title, "author": author},
             "status": "initialized",
-            "current_stage": "00_topic",
+            "current_stage": "00_topic_选题",
             "created_at": utc_now(),
-            "release": {"version": "v4", "source_of_truth": "local_master"},
+            "workflow": {
+                "mode": "single-book",
+                "release_profile_id": "book-v4-bilingual-3x4",
+                "state_source": "derived_gate_evaluator",
+                "status_field_role": "compatibility_cache_only"
+            },
             "review": {
                 "script": "pending",
                 "cover_rights": "pending",
@@ -124,7 +121,7 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
     ):
         created.append(project / "project.json")
     if write_json_if_missing(
-        project / "02_story_script" / "script.v2.bilingual.template.json",
+        project / "02_story_script_故事脚本" / "script.v2.bilingual.template.json",
         {
             "schema_version": "1.0",
             "status": "draft",
@@ -136,9 +133,9 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
             ],
         },
     ):
-        created.append(project / "02_story_script" / "script.v2.bilingual.template.json")
+        created.append(project / "02_story_script_故事脚本" / "script.v2.bilingual.template.json")
     if write_json_if_missing(
-        project / "01_research" / "sources" / "cover" / "cover_manifest.template.json",
+        project / "01_research_资料搜集" / "sources" / "cover" / "cover_manifest.template.json",
         {
             "status": "pending",
             "source_url": None,
@@ -148,9 +145,9 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
             "reviewer": None,
         },
     ):
-        created.append(project / "01_research" / "sources" / "cover" / "cover_manifest.template.json")
+        created.append(project / "01_research_资料搜集" / "sources" / "cover" / "cover_manifest.template.json")
     if write_json_if_missing(
-        project / "06_music" / "attribution.template.json",
+        project / "06_music_音乐" / "attribution.template.json",
         {
             "status": "pending",
             "title": None,
@@ -163,7 +160,7 @@ def create_project(workspace: Path, slug: str, title: str, author: str) -> tuple
             "rights_review": "pending",
         },
     ):
-        created.append(project / "06_music" / "attribution.template.json")
+        created.append(project / "06_music_音乐" / "attribution.template.json")
     return project, created
 
 

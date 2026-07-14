@@ -18,11 +18,13 @@ The Skill is available on the next turn after installation.
 
 ## What it does
 
-- Creates a clean factory/warehouse directory contract.
+- Copies a clean, media-free deterministic factory runtime and warehouse directory contract.
 - Scaffolds idempotent project folders and a bilingual 15-line script template.
 - Checks local planning/render dependencies without assuming macOS paths.
 - Defines rights, source, caption, QC, and ChatCut handoff gates.
 - Writes an append-only run-cost ledger that never invents token values.
+- Derives fail-closed workflow state from immutable manifests and hash-bound approval events.
+- Fits long book titles to a named release profile with measured safe margins and semantic wrapping.
 
 ## Example outputs / 示例成片
 
@@ -54,7 +56,7 @@ The Skill is the operating contract and orchestration layer; it does not silentl
 | Narration / 人声 | [OpenBMB VoxCPM2](https://github.com/OpenBMB/VoxCPM) locally, or an authorized human/cloud TTS provider | Produce a stable channel voice and project narration | Lock one approved voice reference; clone only voices with explicit permission |
 | Timing and captions / 对齐与字幕 | [faster-whisper](https://github.com/SYSTRAN/faster-whisper), Whisper-compatible ASR, or an editor transcript | Derive word/segment timing, SRT/ASS and bilingual caption cues | Timing must come from real narration audio; never invent timestamps |
 | BGM and SFX / 音乐与音效 | One project-specific licensed track, user-owned audio, or an authorized music-generation capability; optional ChatCut music generation | Establish mood, intro rhythm and voice ducking | Record creator/provider, licence, source, hash and attribution; never copy reference-video audio |
-| Typography and graphics / 字体与图层 | [Pillow](https://python-pillow.org/) plus a permitted CJK font such as Source Han/Noto CJK | Render centered titles, bilingual captions, outlines and safe margins | Fonts are not bundled; verify font licence and keep a local font manifest |
+| Typography and graphics / 字体与图层 | [Pillow](https://python-pillow.org/) plus the bundled OFL SmileySans fallback or an operator-configured CJK/English font | Render centered titles, bilingual captions, outlines and safe margins | The bundled fallback is replaceable; verify any replacement font licence and keep a local font manifest |
 | Deterministic render / 合成 | [FFmpeg and FFprobe](https://ffmpeg.org/) | 3:4 composition, image motion, transitions, mixing, ducking, encoding and media inspection | Required for the local-render path |
 | Orchestration / 流水线调度 | Codex + this Skill's bootstrap, doctor and quality-gate contracts | Move an approved topic through research, assets, voice, render, QC and delivery | Human gates remain at topic, script, rights and publish approval |
 | Cost ledger / 成本记录 | `scripts/run_cost.py` plus provider telemetry | Append image jobs, voice seconds, render seconds, retries and known Codex token counts | Missing telemetry is recorded as `—`, never guessed as zero |
@@ -84,6 +86,7 @@ The MIT licence applies only to this repository's code and documentation. It doe
 
 ```bash
 python3 -m unittest discover -s skills/book-video-factory/tests -v
+python3 -m unittest discover -s skills/book-video-factory/runtime/book_video_factory/tests -v
 ```
 
 When the Codex Skill Creator is available, also run its `quick_validate.py` against this repository root.

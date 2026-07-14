@@ -15,6 +15,8 @@ description: Create or operate a portable, auditable Chinese book-review short-v
    python3 <SKILL_ROOT>/scripts/doctor.py --profile planning
    ```
 
+   Bootstrap copies the bundled deterministic runtime into `book_video_factory/`; it does not download hidden media or depend on the maintainer's machine.
+
 3. Create a project only after the user approves the book/topic:
 
    ```bash
@@ -39,6 +41,14 @@ description: Create or operate a portable, auditable Chinese book-review short-v
 4. **Voice and timing** — generate/record narration only with authorization. Create a timing map with a permitted local ASR tool or an editor transcript; never silently invent timestamps.
 5. **Render** — build a 3:4 local master with centered title treatment, bilingual captions, safe margins, and project-specific music/SFX. Use an original/generated SFX or a user-supplied file with recorded rights; never copy a reference video's audio.
 6. **QC and delivery** — run technical checks, verify all release gates, write a manifest and cost events, then optionally import the passed local master into ChatCut for fine editing.
+
+## Workflow contracts
+
+- Use `config/release_profiles/book-v4-bilingual-3x4.json` as the named V4 contract instead of treating V4 dimensions and bilingual layout as universal constants.
+- Use `scripts/workflow.py evaluate` to derive workflow state. `project.json.status` is not an approval mechanism.
+- Record human decisions with `scripts/workflow.py approve`; approvals bind to the reviewed file hash and become stale after edits.
+- Use `scripts/workflow.py manifest-stage` for immutable stage manifests with input/output hashes.
+- Long titles are pixel-measured, semantically wrapped to at most two lines, and fail closed if they cannot fit the configured safe area.
 
 ## Required release gates
 
