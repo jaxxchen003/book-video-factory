@@ -18,6 +18,12 @@ from book_video_factory.manifests import (  # noqa: E402
     write_stage_manifest,
 )
 from book_video_factory.project import initialize_project  # noqa: E402
+from book_video_factory.style_profiles import (  # noqa: E402
+    StyleProfile,
+    StyleProfileError,
+    load_style_profile,
+    project_workflow,
+)
 
 
 class ReleaseProfileTests(unittest.TestCase):
@@ -33,6 +39,22 @@ class ReleaseProfileTests(unittest.TestCase):
         )
         self.assertEqual(profile.profile_id, "book-v4-bilingual-3x4")
         self.assertEqual(profile.title_max_width, 608)
+
+    def test_vox_release_and_both_style_profiles_are_valid(self) -> None:
+        vox_release = ReleaseProfile.load(
+            ROOT / "config/release_profiles/book-vox-vertical-9x16-v1.json"
+        )
+        self.assertEqual(vox_release.renderer, "external_clip_timeline_v1")
+        self.assertEqual(
+            vox_release.asset_manifest,
+            "03_images_生成图片/collage-broll/video-assets-v1.json",
+        )
+        original = load_style_profile("book-editorial-bilingual-v2")
+        vox = load_style_profile("paper-collage-explainer-v1")
+        self.assertIsInstance(original, StyleProfile)
+        self.assertEqual(original.release_profile_id, "book-v4-bilingual-3x4")
+        self.assertEqual(vox.display_name_zh, "VOX风格图书视频")
+        self.assertEqual(vox.release_profile_id, "book-vox-vertical-9x16-v1")
 
     def test_invalid_title_safe_box_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -144,6 +166,52 @@ class ManifestTests(unittest.TestCase):
 
 
 class GateTests(unittest.TestCase):
+    def test_vox_project_uses_its_own_release_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = initialize_project(
+                Path(temp),
+                "vox-sample",
+                "样书",
+                "作者",
+                style_profile_id="paper-collage-explainer-v1",
+                generation_lane="gemini-api",
+            )
+            profile = ReleaseProfile.load(
+                ROOT / "config/release_profiles/book-vox-vertical-9x16-v1.json"
+            )
+            result = evaluate_workflow_state(project, profile)
+            self.assertEqual(result["derived_state"], "draft")
+            self.assertEqual(result["style_profile_id"], "paper-collage-explainer-v1")
+            self.assertEqual(result["style_display_name"], "VOX风格图书视频")
+            self.assertTrue(result["release_profile_aligned"])
+
+            legacy = ReleaseProfile.load(
+                ROOT / "config/release_profiles/book-v4-bilingual-3x4.json"
+            )
+            mismatch = evaluate_workflow_state(project, legacy)
+            self.assertEqual(mismatch["derived_state"], "invalid")
+            self.assertFalse(mismatch["release_profile_aligned"])
+
+    def test_project_workflow_rejects_recorded_style_release_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = initialize_project(
+                Path(temp),
+                "vox-sample",
+                "样书",
+                "作者",
+                style_profile_id="paper-collage-explainer-v1",
+                generation_lane="google-flow",
+            )
+            contract_path = project / "project.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["workflow"]["release_profile_id"] = "book-v4-bilingual-3x4"
+            contract_path.write_text(
+                json.dumps(contract, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(StyleProfileError, "incompatible profile"):
+                project_workflow(project)
+
     def test_same_timestamp_gate_decisions_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = initialize_project(Path(temp), "sample", "样书", "作者")

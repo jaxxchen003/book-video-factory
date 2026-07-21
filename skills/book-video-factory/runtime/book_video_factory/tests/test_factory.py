@@ -11,6 +11,7 @@ SRC = Path(__file__).resolve().parents[1] / "src"
 sys.path.insert(0, str(SRC))
 
 from book_video_factory.project import PROJECT_DIRECTORIES, initialize_project  # noqa: E402
+from book_video_factory.style_profiles import StyleProfileError  # noqa: E402
 from book_video_factory.audio import splice_asr_timestamps  # noqa: E402
 from book_video_factory.voice import build_generation_request  # noqa: E402
 from book_video_factory.weread import (  # noqa: E402
@@ -42,8 +43,72 @@ class ProjectTests(unittest.TestCase):
                 first["workflow"]["release_profile_id"],
                 "book-v4-bilingual-3x4",
             )
+            self.assertEqual(
+                first["workflow"]["style_profile_id"],
+                "book-editorial-bilingual-v2",
+            )
+            self.assertEqual(first["workflow"]["generation_lane"], "local-renderer")
             self.assertTrue((project / "manifests/stages").is_dir())
             self.assertTrue((project / "logs/approval_events").is_dir())
+
+    def test_vox_style_requires_explicit_lane_and_maps_release_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            warehouse = Path(temp) / "warehouse"
+            with self.assertRaisesRegex(StyleProfileError, "explicit generation lane"):
+                initialize_project(
+                    warehouse,
+                    "missing-lane",
+                    "样书",
+                    "作者",
+                    style_profile_id="paper-collage-explainer-v1",
+                )
+            project = initialize_project(
+                warehouse,
+                "vox-sample",
+                "样书",
+                "作者",
+                style_profile_id="paper-collage-explainer-v1",
+                generation_lane="google-flow",
+            )
+            payload = json.loads(
+                (project / "project.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                payload["workflow"]["style_profile_id"],
+                "paper-collage-explainer-v1",
+            )
+            self.assertEqual(
+                payload["workflow"]["style_display_name"],
+                "VOX风格图书视频",
+            )
+            self.assertEqual(
+                payload["workflow"]["release_profile_id"],
+                "book-vox-vertical-9x16-v1",
+            )
+            self.assertEqual(payload["workflow"]["generation_lane"], "google-flow")
+            with self.assertRaisesRegex(ValueError, "does not support workflow mode"):
+                initialize_project(
+                    warehouse,
+                    "vox-content-backed",
+                    "样书",
+                    "作者",
+                    mode="content-system-backed",
+                    style_profile_id="paper-collage-explainer-v1",
+                    generation_lane="google-flow",
+                )
+
+    def test_style_rejects_incompatible_release_profile_override(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaisesRegex(ValueError, "incompatible override"):
+                initialize_project(
+                    Path(temp),
+                    "vox-mismatch",
+                    "样书",
+                    "作者",
+                    release_profile_id="book-v4-bilingual-3x4",
+                    style_profile_id="paper-collage-explainer-v1",
+                    generation_lane="google-flow",
+                )
 
 
 class WeReadTests(unittest.TestCase):

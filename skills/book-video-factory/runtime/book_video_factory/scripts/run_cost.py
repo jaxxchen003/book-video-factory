@@ -179,7 +179,7 @@ def report(args: argparse.Namespace) -> None:
         if slug not in {project_slug for project_slug, _ in v4_projects}
     ]
     rows = [
-        "# 图书号工厂运行成本台账",
+        "# 图书视频工厂运行成本台账",
         "",
         "仅汇总已记录数字；`—` 表示平台未提供或尚未人工导入 token，绝不把缺失值伪装成 0。",
         "",

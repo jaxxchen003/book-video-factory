@@ -22,6 +22,7 @@ PROJECT_DIRS = (
     "03_images_生成图片/prompts",
     "03_images_生成图片/generated",
     "03_images_生成图片/approved/v4",
+    "03_images_生成图片/collage-broll",
     "04_copy_文案",
     "05_voice_人声",
     "06_music_音乐",
@@ -37,6 +38,7 @@ PROJECT_DIRS = (
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 BUNDLED_FACTORY = SKILL_ROOT / "runtime" / "book_video_factory"
+DEFAULT_STYLE_PROFILE_ID = "book-editorial-bilingual-v2"
 
 
 def utc_now() -> str:
@@ -59,6 +61,50 @@ def valid_slug(value: str) -> str:
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", value):
         raise argparse.ArgumentTypeError("slug must use lowercase letters, digits, and single hyphens")
     return value
+
+
+def available_style_profile_ids() -> tuple[str, ...]:
+    directory = BUNDLED_FACTORY / "config" / "style_profiles"
+    return tuple(sorted(path.stem for path in directory.glob("*.json") if path.is_file()))
+
+
+def load_style_profile(style_profile_id: str) -> dict[str, Any]:
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", style_profile_id):
+        raise ValueError("style_profile_id must be a safe identifier")
+    directory = (BUNDLED_FACTORY / "config" / "style_profiles").resolve()
+    path = (directory / f"{style_profile_id}.json").resolve()
+    try:
+        path.relative_to(directory)
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError, json.JSONDecodeError) as error:
+        allowed = ", ".join(available_style_profile_ids())
+        raise ValueError(
+            f"cannot load style profile {style_profile_id!r}; available: {allowed}"
+        ) from error
+    if payload.get("style_id") != style_profile_id:
+        raise ValueError("style profile filename and style_id do not match")
+    return payload
+
+
+def resolve_generation_lane(
+    style_profile: dict[str, Any], requested: str | None
+) -> str:
+    lanes = style_profile.get("generation_lanes")
+    if not isinstance(lanes, dict) or not lanes:
+        raise ValueError("style profile does not define generation_lanes")
+    lane = requested or style_profile.get("default_generation_lane")
+    if lane is None:
+        allowed = ", ".join(sorted(lanes))
+        raise ValueError(
+            f"style {style_profile['style_id']} requires --generation-lane; use {allowed}"
+        )
+    if lane not in lanes:
+        allowed = ", ".join(sorted(lanes))
+        raise ValueError(
+            f"unsupported generation lane {lane!r} for {style_profile['style_id']}; "
+            f"use {allowed}"
+        )
+    return str(lane)
 
 
 def bootstrap_workspace(workspace: Path) -> list[Path]:
@@ -96,9 +142,20 @@ def create_project(
     title: str,
     author: str,
     mode: str = "single-book",
+    style_profile_id: str = DEFAULT_STYLE_PROFILE_ID,
+    generation_lane: str | None = None,
 ) -> tuple[Path, list[Path]]:
     if mode not in {"single-book", "content-system-backed"}:
         raise ValueError(f"unsupported workflow mode: {mode}")
+    style_profile = load_style_profile(style_profile_id)
+    if mode not in style_profile.get("supported_workflow_modes", []):
+        raise ValueError(
+            f"style {style_profile_id} does not support workflow mode {mode}"
+        )
+    resolved_generation_lane = resolve_generation_lane(
+        style_profile, generation_lane
+    )
+    release_profile_id = str(style_profile["release_profile_id"])
     project = workspace / "book_video_warehouse" / "projects" / slug
     contract_path = project / "project.json"
     if contract_path.is_file():
@@ -116,6 +173,36 @@ def create_project(
             raise ValueError(
                 f"project {slug} already uses workflow mode {existing_mode}; "
                 f"refusing requested mode {mode}"
+            )
+        existing_style = (
+            str(workflow.get("style_profile_id") or DEFAULT_STYLE_PROFILE_ID)
+            if isinstance(workflow, dict)
+            else DEFAULT_STYLE_PROFILE_ID
+        )
+        existing_release_profile = (
+            str(workflow.get("release_profile_id") or "")
+            if isinstance(workflow, dict)
+            else ""
+        )
+        if not existing_release_profile:
+            existing_release_profile = str(
+                load_style_profile(existing_style)["release_profile_id"]
+            )
+        existing_lane = workflow.get("generation_lane") if isinstance(workflow, dict) else None
+        if existing_lane is None and existing_style == DEFAULT_STYLE_PROFILE_ID:
+            existing_lane = resolve_generation_lane(
+                load_style_profile(existing_style), None
+            )
+        if (
+            existing_style != style_profile_id
+            or existing_release_profile != release_profile_id
+            or existing_lane != resolved_generation_lane
+        ):
+            raise ValueError(
+                f"project {slug} already uses style {existing_style}, release profile "
+                f"{existing_release_profile}, and lane {existing_lane}; refusing requested "
+                f"style {style_profile_id}, release profile {release_profile_id}, and lane "
+                f"{resolved_generation_lane}"
             )
     created: list[Path] = []
     for relative in PROJECT_DIRS:
@@ -135,7 +222,11 @@ def create_project(
             "created_at": utc_now(),
             "workflow": {
                 "mode": mode,
-                "release_profile_id": "book-v4-bilingual-3x4",
+                "style_profile_id": style_profile_id,
+                "style_display_name": style_profile["display_name"]["zh-CN"],
+                "release_profile_id": release_profile_id,
+                "generation_lane": resolved_generation_lane,
+                "execution_mode": style_profile["execution_mode"],
                 "state_source": "derived_gate_evaluator",
                 "status_field_role": "compatibility_cache_only"
             },
@@ -204,6 +295,15 @@ def main() -> int:
         choices=("single-book", "content-system-backed"),
         default="single-book",
     )
+    parser.add_argument(
+        "--style-profile",
+        choices=available_style_profile_ids(),
+        default=DEFAULT_STYLE_PROFILE_ID,
+    )
+    parser.add_argument(
+        "--generation-lane",
+        help="Required for styles with multiple provider lanes, such as gemini-api or google-flow.",
+    )
     args = parser.parse_args()
     project_args = (args.slug, args.book_title, args.author)
     if any(project_args) and not all(project_args):
@@ -220,6 +320,8 @@ def main() -> int:
             args.book_title,
             args.author,
             args.mode,
+            args.style_profile,
+            args.generation_lane,
         )
         payload["project"] = str(project.relative_to(workspace))
         payload["project_created"] = [str(path.relative_to(workspace)) for path in project_created]

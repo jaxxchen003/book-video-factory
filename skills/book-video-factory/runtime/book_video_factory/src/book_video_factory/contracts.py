@@ -48,7 +48,8 @@ class ReleaseProfile:
         profile_id = payload.get("profile_id")
         if not isinstance(profile_id, str) or not profile_id.strip():
             raise ContractError("release profile requires profile_id")
-        if payload.get("renderer") not in {"build_batch_video_v3"}:
+        renderer = payload.get("renderer")
+        if renderer not in {"build_batch_video_v3", "external_clip_timeline_v1"}:
             raise ContractError("release profile uses an unknown renderer")
 
         canvas = _mapping(payload, "canvas")
@@ -57,14 +58,37 @@ class ReleaseProfile:
         _positive_int(canvas, "fps")
 
         script = _mapping(payload, "script")
-        if script.get("language_mode") not in {"zh", "bilingual"}:
+        if script.get("language_mode") not in {"zh", "bilingual", "zh_or_bilingual"}:
             raise ContractError("unsupported script language_mode")
-        _positive_int(script, "line_count")
+        if renderer == "build_batch_video_v3":
+            _positive_int(script, "line_count")
+        elif script.get("line_count_policy") != "variable":
+            raise ContractError(
+                "external clip timelines require script.line_count_policy=variable"
+            )
 
         visual = _mapping(payload, "visual")
-        _positive_int(visual, "scene_count")
-        if visual.get("scene_format") not in {"png", "jpg", "jpeg"}:
-            raise ContractError("unsupported scene_format")
+        if renderer == "build_batch_video_v3":
+            _positive_int(visual, "scene_count")
+            if visual.get("scene_format") not in {"png", "jpg", "jpeg"}:
+                raise ContractError("unsupported scene_format")
+        else:
+            if visual.get("scene_count_policy") != "manifest":
+                raise ContractError(
+                    "external clip timelines require visual.scene_count_policy=manifest"
+                )
+            if visual.get("scene_format") != "mp4":
+                raise ContractError("external clip timelines require mp4 scenes")
+            asset_manifest = visual.get("asset_manifest")
+            if (
+                not isinstance(asset_manifest, str)
+                or not asset_manifest.strip()
+                or Path(asset_manifest).is_absolute()
+                or ".." in Path(asset_manifest).parts
+            ):
+                raise ContractError(
+                    "external clip timelines require a safe relative asset_manifest"
+                )
 
         typography = _mapping(payload, "typography")
         margin = _positive_int(typography, "title_safe_margin_x_px")
@@ -91,13 +115,32 @@ class ReleaseProfile:
         return str(self.payload["profile_id"])
 
     @property
+    def renderer(self) -> str:
+        return str(self.payload["renderer"])
+
+    @property
     def title_max_width(self) -> int:
         return int(self.payload["typography"]["title_max_width_px"])
 
     @property
     def scene_count(self) -> int:
-        return int(self.payload["visual"]["scene_count"])
+        value = self.payload["visual"].get("scene_count")
+        if value is None:
+            raise ContractError(
+                f"release profile {self.profile_id} uses manifest-defined scene count"
+            )
+        return int(value)
 
     @property
     def line_count(self) -> int:
-        return int(self.payload["script"]["line_count"])
+        value = self.payload["script"].get("line_count")
+        if value is None:
+            raise ContractError(
+                f"release profile {self.profile_id} uses variable script line count"
+            )
+        return int(value)
+
+    @property
+    def asset_manifest(self) -> str | None:
+        value = self.payload["visual"].get("asset_manifest")
+        return str(value) if value is not None else None

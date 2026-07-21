@@ -4,6 +4,8 @@
   "title": "超越百岁：长寿的科学与艺术",
   "author": "彼得·阿提亚",
   "style_profile": "paper-collage-explainer-v1",
+  "style_display_name": "VOX风格图书视频",
+  "style_name_policy": "descriptive_reference_only_no_affiliation",
   "source_release": {
     "project_id": "chaoyue-baisui-peter-attia",
     "release_id": "collage-v1-r5",
@@ -19,6 +21,12 @@
       "true_peak_dbfs": -2.8,
       "blackdetect_events": 0
     }
+  },
+  "source_gate_summary": {
+    "path": "examples/manifests/chaoyue-baisui-r5-gate-summary.json",
+    "sha256": "81f6852641467ed9baae3a89ba090beb4d0de9d8d09998ec5e17bb86a526f8ec",
+    "source_publication_status": "not_approved",
+    "repository_showcase_derivative_status": "separately_operator_approved"
   },
   "public_showcase_preview": {
     "path": "examples/videos/chaoyue-baisui-paper-collage.mp4",
@@ -37,6 +45,15 @@
   },
   "showcase_decision": {
     "scope": "Public repository showcase derivative requested by the user on 2026-07-22.",
+    "approval": {
+      "gate": "showcase_publish",
+      "decision": "approved",
+      "reviewer": "user",
+      "evidence_ref": "conversation:2026-07-22:requested-direct-repository-publication",
+      "reviewed_output_path": "examples/videos/chaoyue-baisui-paper-collage.mp4",
+      "reviewed_output_sha256": "cda9dc11aa7b7f71897f576a188f2f76e1cded3f8517138aeedf7625cbda6f30",
+      "approval_scope": "repository_showcase_derivative_only"
+    },
     "does_not_modify_source_master": true,
     "does_not_change_source_delivery_manifest": true,
     "reuse_license": "not_granted",

@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0",
+  "record_type": "sanitized_source_gate_summary",
+  "case_id": "chaoyue-baisui-paper-collage",
+  "source_project_id": "chaoyue-baisui-peter-attia",
+  "source_release_id": "collage-v1-r5",
+  "source_delivery_manifest": {
+    "project_relative_path": "10_delivery_交付/collage-v1-r5-local-approved/delivery-manifest.json",
+    "sha256": "4060a43de9bd8680dcee8929930ef7c911743a8253e3cf19183d3671b817df5a",
+    "release_decision": "approved_for_local_master_only",
+    "ready_to_publish": false
+  },
+  "approved_source_gates": [
+    {
+      "gate": "topic",
+      "decision": "approved",
+      "reviewer_role": "local_production_operator",
+      "reviewed_at": "2026-07-19T16:00:01.343958+00:00",
+      "event_id": "e3cfee2a-f3bc-4f1d-8571-43be40fe4ddc",
+      "event_file_sha256": "043e6de77ec691e7870e4c563dfb13abd14d06cc23ffa223bd475f5974d058de",
+      "subject_path": "project.json",
+      "subject_sha256": "d129cd9232a676e143c67ee748f90cb8e11c11ebd5288ba378ed0e9738a28e34"
+    },
+    {
+      "gate": "script",
+      "decision": "approved",
+      "reviewer_role": "local_production_operator",
+      "reviewed_at": "2026-07-19T16:00:01.615579+00:00",
+      "event_id": "c6ab4304-8b55-4203-a941-d0009652931b",
+      "event_file_sha256": "5d6ee7a07455e1a2945a9fcfc8f7d15646ed2cd0cae3a7386dd5850891234ed6",
+      "subject_path": "02_story_script_故事脚本/script.v2.bilingual.json",
+      "subject_sha256": "db561dd0197d3d993dbdc85f3fa694007ae072b1df406a6b6fe687733ff9d56b"
+    },
+    {
+      "gate": "voice_rights",
+      "decision": "approved",
+      "reviewer_role": "local_production_operator",
+      "reviewed_at": "2026-07-19T16:00:01.915911+00:00",
+      "event_id": "63d70927-70ac-45a7-bd16-143dd9f84a28",
+      "event_file_sha256": "1c1a7cfe4842a2b03b93c83aaf26ee5ceac5a22af4d70b561e5eb93670135ef3",
+      "subject_path": "05_voice_人声/voice-authorization.collage-v1-r1.json",
+      "subject_sha256": "82d3b097f956ea1037e9f2a92ea6df040ddb82c07fd01f39235274c8307ef382"
+    },
+    {
+      "gate": "timing",
+      "decision": "approved",
+      "reviewer_role": "local_production_operator",
+      "reviewed_at": "2026-07-19T16:00:02.203803+00:00",
+      "event_id": "2ad273f6-d22b-4cdd-8018-a0ae66df84ff",
+      "event_file_sha256": "68ef03e93afcc47742c6488524e4c9872abce0df1d9493f3c4b8bdcb91ed5cef",
+      "subject_path": "07_timeline_时间线/collage-v1-r3/timeline.aligned.json",
+      "subject_sha256": "44d071c98bc1ecf127b5fb7bd15db1bae69cf7a94d85662ab9b57eb9b31062f4"
+    },
+    {
+      "gate": "bgm_rights",
+      "decision": "approved",
+      "reviewer_role": "local_production_operator",
+      "reviewed_at": "2026-07-19T16:00:02.468354+00:00",
+      "event_id": "7288fb24-376c-46e9-a984-cef67bf5335b",
+      "event_file_sha256": "f1687c288159cb7fa22771e49c9495eb2e5fad76725a903a93976a0612c692f6",
+      "subject_path": "06_music_音乐/chatcut-bgm-provenance.collage-v1-r5.json",
+      "subject_sha256": "03dec0768e6926d81b4a98e644a675567f51e3dd0f67346d352ccd26bd6708d1"
+    },
+    {
+      "gate": "sfx_rights",
+      "decision": "approved",
+      "reviewer_role": "local_production_operator",
+      "reviewed_at": "2026-07-19T16:00:02.717367+00:00",
+      "event_id": "a4613464-e451-4990-ad8b-8ece09f1f7e3",
+      "event_file_sha256": "8a5e23921adc031473a5572f8ef85af77b10c42be346634f4b6d0ce885310892",
+      "subject_path": "06_music_音乐/audio-provenance.collage-v1-r5.json",
+      "subject_sha256": "4b67fecf386eb2d5379ec7351734a9164c973a022c2c3af7b1b55b5b1053192f"
+    },
+    {
+      "gate": "bgm_review",
+      "decision": "approved",
+      "reviewer_role": "user",
+      "reviewed_at": "2026-07-19T16:14:25.095180+00:00",
+      "event_id": "fa27dde2-aee8-4e8c-8bad-aa4f8a7292cf",
+      "event_file_sha256": "c9df96ecb83ceb891dca6b80257598fdaa17a57655623876f54497b79d0c0b83",
+      "subject_path": "08_render_合成/collage-v1-r5/chaoyue-baisui-peter-attia-collage-v1-r5-local-master-9x16.mp4",
+      "subject_sha256": "1996cee1fd0e7cc5e3187810efe38c94d5636e1be3d3953a38bbda35de9ad5c0"
+    },
+    {
+      "gate": "local_master_review",
+      "decision": "approved",
+      "reviewer_role": "user",
+      "reviewed_at": "2026-07-19T16:14:25.340804+00:00",
+      "event_id": "c13f0918-39d2-42d3-9bf0-ce99911e7f67",
+      "event_file_sha256": "53121bbb9e72e9c0841afe7a91bb0cd5fd6fe2bc81251604dafd3fff2aabb781",
+      "subject_path": "08_render_合成/collage-v1-r5/chaoyue-baisui-peter-attia-collage-v1-r5-local-master-9x16.mp4",
+      "subject_sha256": "1996cee1fd0e7cc5e3187810efe38c94d5636e1be3d3953a38bbda35de9ad5c0"
+    }
+  ],
+  "technical_audio_visual_qc": {
+    "status": "pass_for_local_bgm_review",
+    "integrated_loudness_lufs": -14.9,
+    "true_peak_dbfs": -2.8,
+    "blackdetect_events": 0
+  },
+  "source_publication_status": {
+    "decision": "not_approved",
+    "pending_gates": [
+      "source_audit",
+      "cover_rights",
+      "english_native",
+      "publish"
+    ],
+    "statement": "The r5 source master is approved only as a local master; this summary does not convert it into a production publication approval."
+  },
+  "repository_showcase_derivative": {
+    "path": "examples/videos/chaoyue-baisui-paper-collage.mp4",
+    "sha256": "cda9dc11aa7b7f71897f576a188f2f76e1cded3f8517138aeedf7625cbda6f30",
+    "poster_path": "examples/posters/chaoyue-baisui-paper-collage.jpg",
+    "poster_sha256": "28b68258ce140d7b7813d39005f541701dce885119268b1fc21e3cee256c9e2d",
+    "transformations": [
+      "Replaced the real book-cover region during the opening 11.9 seconds with an existing project paper-collage visual patch.",
+      "Transcoded the derivative to H.264/AAC with fast-start metadata for GitHub Pages playback.",
+      "Preserved the narration timeline and total duration."
+    ],
+    "approval": {
+      "gate": "showcase_publish",
+      "decision": "approved",
+      "reviewer_role": "user",
+      "reviewed_at": "2026-07-22",
+      "evidence_ref": "conversation:2026-07-22:requested-direct-repository-publication",
+      "approval_scope": "repository_showcase_derivative_only",
+      "reviewed_output_sha256": "cda9dc11aa7b7f71897f576a188f2f76e1cded3f8517138aeedf7625cbda6f30"
+    }
+  },
+  "rights_statement": {
+    "bgm_origin": "Generated through ChatCut with Mureka 9 in the user's authenticated account; the local provenance record is hash-bound above.",
+    "operator_attestation": "The user requested publication of this sanitized repository showcase derivative.",
+    "independent_verification": "Provider-account terms and downstream public-display rights were not independently verified by this repository.",
+    "reuse_license": "not_granted",
+    "excluded_from_mit_license": [
+      "book title and quoted ideas",
+      "translation",
+      "music",
+      "trademarks",
+      "other third-party elements"
+    ]
+  }
+}

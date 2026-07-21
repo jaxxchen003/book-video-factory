@@ -16,8 +16,9 @@ from book_video_factory.freesound import (
     commercial_api_authorized,
     credential_available as freesound_credential_available,
 )
-from book_video_factory.contracts import ReleaseProfile
+from book_video_factory.contracts import ContractError, ReleaseProfile
 from book_video_factory.gates import evaluate_workflow_state
+from book_video_factory.style_profiles import StyleProfileError, project_workflow
 
 
 def executable_check(name: str, *, required: bool) -> dict[str, object]:
@@ -30,7 +31,10 @@ def executable_check(name: str, *, required: bool) -> dict[str, object]:
 
 
 def python_module_check(name: str, *, required: bool) -> dict[str, object]:
-    available = importlib.util.find_spec(name) is not None
+    try:
+        available = importlib.util.find_spec(name) is not None
+    except (ImportError, ModuleNotFoundError):
+        available = False
     return {
         "name": f"python_module:{name}",
         "status": "ready" if available else ("blocked" if required else "warn"),
@@ -65,6 +69,8 @@ def main() -> int:
     args = parser.parse_args()
 
     local_render = args.profile in {"local-render", "production", "public-release"}
+    project = args.project.expanduser().resolve() if args.project else None
+    workflow: dict[str, object] | None = None
 
     checks = [
         executable_check("python3", required=True),
@@ -86,6 +92,59 @@ def main() -> int:
             "path": str(model),
         }
     )
+    if project is not None:
+        try:
+            workflow = project_workflow(project)
+        except StyleProfileError as error:
+            checks.append(
+                {
+                    "name": "project_style_profile",
+                    "status": "blocked",
+                    "path": str(project),
+                    "note": str(error),
+                }
+            )
+        else:
+            style_profile = workflow["style_profile"]
+            checks.append(
+                {
+                    "name": "project_style_profile",
+                    "status": "ready",
+                    "path": str(style_profile.path),
+                    "style_profile_id": style_profile.style_id,
+                    "display_name": style_profile.display_name_zh,
+                    "generation_lane": workflow["generation_lane"],
+                }
+            )
+            if (
+                args.profile == "production"
+                and workflow["generation_lane"] == "gemini-api"
+            ):
+                checks.append(
+                    {
+                        "name": "gemini_api_credential",
+                        "status": (
+                            "ready"
+                            if os.environ.get("GEMINI_API_KEY", "").strip()
+                            else "blocked"
+                        ),
+                        "path": "GEMINI_API_KEY environment variable",
+                        "note": "Required only for the selected Gemini API generation lane; never write it to project files or manifests.",
+                    }
+                )
+                checks.append(python_module_check("google.genai", required=True))
+            elif (
+                args.profile == "production"
+                and workflow["generation_lane"] == "google-flow"
+            ):
+                checks.append(
+                    {
+                        "name": "google_flow_manual_prerequisites",
+                        "status": "warn",
+                        "path": "eligible Google AI plan, credits, region, and desktop browser",
+                        "note": "Manual account eligibility cannot be verified by doctor.py. Flow is not treated as a programmable API.",
+                    }
+                )
     checks.append(
         {
             "name": "weread_credential",
@@ -106,7 +165,7 @@ def main() -> int:
         }
     )
     if args.profile == "public-release":
-        if args.project is None:
+        if project is None:
             checks.append(
                 {
                     "name": "project_public_release_gate",
@@ -115,21 +174,41 @@ def main() -> int:
                 }
             )
         else:
-            profile_path = Path(__file__).resolve().parents[1] / "config/release_profiles/book-v4-bilingual-3x4.json"
-            gate = evaluate_workflow_state(
-                args.project.expanduser().resolve(),
-                ReleaseProfile.load(profile_path),
-                release_id=args.release_id,
-            )
-            checks.append(
-                {
-                    "name": "project_public_release_gate",
-                    "status": "ready" if gate["ready_to_publish"] else "blocked",
-                    "path": str(args.project),
-                    "derived_state": gate["derived_state"],
-                    "missing_publish_approvals": gate["missing_publish_approvals"],
-                }
-            )
+            try:
+                resolved_workflow = workflow or project_workflow(project)
+                profile_directory = (
+                    Path(__file__).resolve().parents[1]
+                    / "config"
+                    / "release_profiles"
+                ).resolve()
+                profile_id = str(resolved_workflow["release_profile_id"])
+                profile_path = (profile_directory / f"{profile_id}.json").resolve()
+                profile_path.relative_to(profile_directory)
+                gate = evaluate_workflow_state(
+                    project,
+                    ReleaseProfile.load(profile_path),
+                    release_id=args.release_id,
+                )
+            except (ContractError, StyleProfileError, OSError, ValueError) as error:
+                checks.append(
+                    {
+                        "name": "project_public_release_gate",
+                        "status": "blocked",
+                        "path": str(project),
+                        "note": str(error),
+                    }
+                )
+            else:
+                checks.append(
+                    {
+                        "name": "project_public_release_gate",
+                        "status": "ready" if gate["ready_to_publish"] else "blocked",
+                        "path": str(project),
+                        "style_profile_id": gate["style_profile_id"],
+                        "derived_state": gate["derived_state"],
+                        "missing_publish_approvals": gate["missing_publish_approvals"],
+                    }
+                )
     checks.append(
         {
             "name": "freesound_commercial_api_authorization",

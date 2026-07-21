@@ -21,6 +21,7 @@ import _bootstrap  # noqa: F401
 import build_batch_video_v3 as batch
 import build_final_video_v2 as v2
 from book_video_factory.manifests import write_stage_manifest
+from book_video_factory.style_profiles import project_workflow
 
 
 AUDIO_EXTENSIONS = (".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg")
@@ -180,7 +181,7 @@ def compose(project: Path, force: bool, release_label: str) -> tuple[str, str]:
         project,
         stage="render.v5",
         release_id=release_label,
-        release_profile_id="book-v4-bilingual-3x4",
+        release_profile_id=project_workflow(project)["release_profile_id"],
         inputs=[
             ("visual_base", base),
             ("script", project / "02_story_script_故事脚本/script.v2.bilingual.json"),

@@ -14,6 +14,7 @@ from typing import Any
 from .manifests import artifact as manifest_artifact
 from .manifests import safe_project_output, sha256_file, write_stage_manifest
 from .scene_contract import V4_SCENE_LINE_CONTRACT
+from .style_profiles import DEFAULT_STYLE_PROFILE_ID, load_style_profile
 
 
 class ContentBridgeError(ValueError):
@@ -839,7 +840,13 @@ def _ensure_stage_manifest(
 def _release_profile_id(project: Path) -> str:
     contract = _project_contract(project)
     workflow = contract.get("workflow") if isinstance(contract.get("workflow"), dict) else {}
-    return str(workflow.get("release_profile_id", "book-v4-bilingual-3x4"))
+    recorded = workflow.get("release_profile_id")
+    if isinstance(recorded, str) and recorded.strip():
+        return recorded
+    style_profile_id = str(
+        workflow.get("style_profile_id", DEFAULT_STYLE_PROFILE_ID)
+    )
+    return load_style_profile(style_profile_id).release_profile_id
 
 
 def _ensure_content_import_stage(project: Path, imported: dict[str, Any]) -> Path:

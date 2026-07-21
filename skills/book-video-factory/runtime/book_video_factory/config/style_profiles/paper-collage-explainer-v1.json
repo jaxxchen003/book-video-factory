@@ -1,31 +1,108 @@
 {
   "schema_version": "1.0",
   "style_id": "paper-collage-explainer-v1",
-  "name": "9:16 editorial paper-collage explainer",
+  "display_name": {
+    "zh-CN": "VOX风格图书视频",
+    "en": "VOX-style Book Video"
+  },
+  "public_name_policy": "descriptive_reference_only_no_affiliation",
+  "prompt_style_descriptor": "original editorial paper-collage explainer with layered cut-paper motion, evidence-led diagrams, restrained camera movement, and no imitation of a named publisher or program",
+  "release_profile_id": "book-vox-vertical-9x16-v1",
+  "execution_mode": "orchestration_and_import",
+  "supported_workflow_modes": ["single-book"],
+  "description": "A 9:16, voice-led editorial paper-collage explainer. The Skill orchestrates prompts, approvals, imports, local timing, audio, QC, and delivery; it does not bundle a one-click Google video generator.",
   "output": {
-    "generation": {"width": 720, "height": 1280, "fps": 24, "ratio": "9:16", "audio": "strip_before_local_render"},
-    "local_master": {"width": 720, "height": 1280, "fps": 30, "ratio": "9:16", "codec": "h264+aac"}
+    "generated_clip": {
+      "width": 720,
+      "height": 1280,
+      "ratio": "9:16",
+      "editorial_target_seconds": {"min": 4, "max": 8},
+      "provider_duration_policy": "record the actual output duration; do not assume undocumented API duration options",
+      "fps_source": "provider_output",
+      "audio": "strip_before_local_render"
+    },
+    "local_master": {
+      "width": 720,
+      "height": 1280,
+      "fps": 30,
+      "ratio": "9:16",
+      "codec": "h264+aac",
+      "fps_normalization": "constant_frame_rate_without_speed_change; inspect cadence; do not enable optical-flow interpolation by default"
+    }
   },
   "script": {
     "concept_seconds_min": 4,
     "concept_seconds_max": 8,
     "one_visual_metaphor_per_concept": true,
+    "narration_timing_before_clip_generation": true,
     "caption_source_of_truth": "approved_script_plus_local_asr_timing"
   },
+  "generation_lane_required": true,
   "generation_lanes": {
-    "gemini_api": {
+    "gemini-api": {
+      "mode": "programmatic",
       "required_secret": "GEMINI_API_KEY",
-      "default_model": "gemini-omni-flash",
-      "frame_control_model": "veo-3.1",
-      "require_operation_and_cost_evidence": true
+      "sdk": "google-genai",
+      "default_model": {
+        "display_name": "Gemini Omni Flash",
+        "api_model": "gemini-omni-flash-preview",
+        "api_surface": "interactions",
+        "lifecycle": "preview",
+        "supports_first_frame": true,
+        "supports_first_last_frame_pair": false,
+        "supports_video_extension": false
+      },
+      "frame_control_model": {
+        "display_name": "Veo 3.1",
+        "api_model": "veo-3.1-generate-preview",
+        "api_surface": "generate_videos",
+        "supports_first_last_frame": true,
+        "supports_video_extension": true
+      },
+      "require_operation_and_cost_evidence": true,
+      "uri_delivery_threshold_bytes": 4194304,
+      "large_output_delivery": "use provider URI delivery for generated videos larger than 4MB"
     },
-    "google_flow": {
+    "google-flow": {
       "mode": "manual_ui",
-      "requires_user_subscription_and_credits": true,
+      "requires_eligible_google_ai_plan_and_credits": true,
+      "recommended_browser": "desktop Chromium",
       "api_assumption": "forbidden",
       "require_prompt_export_and_hash_evidence": true
     }
   },
-  "gates": ["script", "gate_1_metaphor", "gate_2_still", "gate_3_clip_qa", "voice_rights", "bgm_rights", "sfx_rights", "local_master_review", "cover_rights", "english_native", "publish"],
-  "prohibitions": ["brand_or_program_imitation", "generated_book_cover", "embedded_caption_text", "unreviewed_generated_audio", "watermarked_or_unverified_export"]
+  "asset_ready_approvals": [
+    "gate_1_metaphor",
+    "gate_2_still",
+    "gate_3_clip_qa"
+  ],
+  "required_publish_approvals": [
+    "source_audit",
+    "script",
+    "gate_1_metaphor",
+    "gate_2_still",
+    "gate_3_clip_qa",
+    "timing",
+    "voice_rights",
+    "bgm_rights",
+    "bgm_review",
+    "sfx_rights",
+    "audio_qc",
+    "local_master_review",
+    "publish"
+  ],
+  "conditional_publish_approvals": {
+    "cover_rights": "when a real book cover or cover-derived frame is used",
+    "english_native": "when English copy or subtitles are delivered",
+    "showcase_publish": "when a derivative is published as a public repository showcase"
+  },
+  "prohibitions": [
+    "brand_affiliation_claim",
+    "brand_or_program_imitation_in_prompts",
+    "generated_book_cover",
+    "embedded_caption_text_in_generated_clips",
+    "unreviewed_generated_audio",
+    "visible_third_party_watermark",
+    "removal_or_tampering_with_invisible_synthid"
+  ]
 }

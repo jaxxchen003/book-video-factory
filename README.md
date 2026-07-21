@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md) · **English**
 
-An installable Codex skill for running a rights-aware, local-first workflow for Chinese book-review short videos. It supports both a deterministic bilingual editorial layout and a 9:16 editorial paper-collage explainer workflow, while keeping evidence, generation provenance, human approvals, costs, and release decisions auditable.
+An installable Codex skill for running a rights-aware, local-first workflow for Chinese book-review short videos. It offers two separate styles: the original **Bilingual Editorial Book Video** and the new **VOX-style Book Video**, while keeping evidence, generation provenance, human approvals, costs, and release decisions auditable.
 
 The repository deliberately ships no reusable book content, covers, music, SFX, voice samples, credentials, or hidden production assets. The videos under `examples/` are maintained showcase derivatives and are not part of the MIT-licensed source package.
 
@@ -35,46 +35,50 @@ The Skill is available on the next turn after installation.
 
 Choose one profile before generating assets. Do not silently mix their aspect ratio, typography, asset, or approval contracts.
 
-| Profile | Output | Best for | Core asset contract |
+| Public style | Machine ID | Output | Core asset contract |
 | --- | --- | --- | --- |
-| `book-editorial-bilingual-v2` | 3:4 bilingual editorial master, optional 9:16 derivative | Stable cover-led book notes and repeatable channel packaging | Real authorized cover, 12 approved still scenes, local narration, bilingual captions, deterministic FFmpeg render |
-| `paper-collage-explainer-v1` | 9:16 editorial paper-collage explainer | High-information concepts expressed through short visual metaphors | One 4–8 second concept per unit, Gate 1 metaphor approval, Gate 2 still/contact-sheet approval, Gate 3 generated-clip QA, local audio and caption master |
+| Bilingual Editorial Book Video (original) | `book-editorial-bilingual-v2` | 3:4 bilingual master, optional 9:16 derivative | Real authorized cover, 12 approved stills, local narration, bilingual captions, deterministic FFmpeg render |
+| VOX-style Book Video (new) | `paper-collage-explainer-v1` | 9:16 voice-led editorial explainer | One 4–8 second visual beat per information change; separate metaphor, frame, clip, BGM, local-master, and publish approvals |
 
 Read the complete [`paper-collage-explainer-v1` workflow](skills/book-video-factory/references/paper-collage-explainer.md) before selecting the new profile.
 
+“VOX-style” is a descriptive public label only. It does not claim affiliation with Vox Media and is not an instruction to imitate a named publisher, show, logo, or proprietary brand package. Generation prompts use non-branded editorial paper-collage descriptors.
+
+The built-in VOX-style profile currently supports `single-book` projects. `content-system-backed` remains available to the original style because its traceability implementation is still tied to the V4 scene-line contract.
+
 ### Gemini API or Google Flow
 
-The paper-collage profile has two explicit generation lanes. The local factory still owns narration timing, captions, BGM, SFX, QC, manifests, and the final master.
+The VOX-style profile has two explicit generation lanes. The local factory still owns narration timing, captions, BGM, SFX, QC, manifests, and the final master. The current repository is an orchestration-and-import workflow; it does not claim to bundle a one-click Google video generator.
 
 | Lane | Use it when | Dependency and boundary |
 | --- | --- | --- |
-| Gemini API | You need reproducible programmatic generation, operation tracking, or batch processing | User-authorized `GEMINI_API_KEY`, current Google Gen AI SDK, approved quota/cost. Use Gemini Omni Flash by default and Veo 3.1 when first/last-frame control or Veo extension is required. Never write the key to prompts, logs, or manifests. |
-| Google Flow | A human director wants to iterate each shot in Google's creative UI | Eligible Google AI subscription, available credits, desktop Chromium, and user-authorized exports. Flow is treated as a manual UI lane; this Skill does not assume a programmable Flow API. |
+| `gemini-api` | You need reproducible programmatic generation, operation tracking, or batch processing | User-authorized `GEMINI_API_KEY`, current Google Gen AI SDK, approved quota/cost. Use `gemini-omni-flash-preview` through the Interactions API; use `veo-3.1-generate-preview` through `generate_videos` for first/last-frame control or extension. Never write the key to prompts, logs, or manifests. |
+| `google-flow` | A human director wants to iterate each visual beat in Google's creative UI | Current account/region eligibility, an eligible Google AI plan, available credits, a user-operated browser, and authorized exports. Flow is a manual UI lane; this Skill does not assume a programmable Flow API. |
 
 For either lane, record the prompt, model or Flow label, input/output hashes, operation or export evidence, exposed cost/credits, reviewer, and scene ID. Generated audio is stripped before the project-owned local mix unless it has a separate explicit approval.
 
-### Core paper-collage workflow
+### Core VOX-style workflow
 
-1. Lock attributable evidence and a concise Chinese script.
-2. Split narration into one 4–8 second concept per scene.
+1. Lock attributable evidence and approve a concise Chinese script.
+2. Record/generate authorized narration, derive real ASR timing, and split it into one 4–8 second information change per visual beat.
 3. Gate 1: approve `concept → visible metaphor → animation action → prohibitions`.
 4. Gate 2: approve the first/last frame or contact sheet.
 5. Gate 3: generate through Gemini API or Google Flow and inspect duration, ratio, watermark, text pollution, motion continuity, and decodability.
-6. Normalize approved clips to silent 9:16 H.264 media.
-7. Build the local timeline from approved narration/ASR timing; add captions, authorized BGM, SFX, and branding locally.
-8. Run technical QC and bind visual, BGM, local-master, rights, and publication decisions to immutable hashes.
+6. Normalize approved clips to silent 720×1280 H.264 media on the 30 fps local timeline without changing speed.
+7. Lock picture to narration/ASR timing; add local captions, authorized BGM, SFX, and project branding. Review BGM rights and creative fit separately.
+8. Run technical QC and bind visual, audio, local-master, rights, and publication decisions to immutable hashes.
 
 ## Example outputs / 示例成片
 
 These are full-pipeline showcase outputs, not source material bundled with the Skill. Click a poster to open the browser player, or [open the complete showcase](https://jaxxchen003.github.io/book-video-factory/demos.html).
 
-### Featured paper-collage case: 《超越百岁》
+### Featured VOX-style case: 《超越百岁》
 
-[![《超越百岁》纸拼贴讲解视频](examples/posters/chaoyue-baisui-paper-collage.jpg)](https://jaxxchen003.github.io/book-video-factory/demos.html#chaoyue-baisui)
+[![《超越百岁》VOX风格图书视频](examples/posters/chaoyue-baisui-paper-collage.jpg)](https://jaxxchen003.github.io/book-video-factory/demos.html#chaoyue-baisui)
 
-[`paper-collage-explainer-v1` · Play video · 82.7s · 9:16](https://jaxxchen003.github.io/book-video-factory/demos.html#chaoyue-baisui)
+[VOX-style Book Video · `paper-collage-explainer-v1` · Play · 82.7s · 9:16](https://jaxxchen003.github.io/book-video-factory/demos.html#chaoyue-baisui)
 
-This public web preview is derived from the user-approved r5 local master. The source master remains immutable. For the repository showcase, the real cover region at the beginning was replaced and the video was web-compressed; see the [case provenance manifest](examples/manifests/chaoyue-baisui-paper-collage.json). Its inclusion does not license the book, title, translation, music, or any third-party material for reuse.
+This public web preview is derived from the user-approved r5 local master. The source master remains immutable and is **not** recorded as production-publish-approved; the sanitized repository derivative has a separate operator approval. For the repository showcase, the real cover region at the beginning was replaced and the video was web-compressed. See the [case provenance manifest](examples/manifests/chaoyue-baisui-paper-collage.json) and [sanitized gate summary](examples/manifests/chaoyue-baisui-r5-gate-summary.json). Provider-account terms were not independently verified by this repository, and inclusion does not license the book, title, translation, music, or any third-party material for reuse.
 
 | 《界限》 | 《不去讨好任何人》 |
 | --- | --- |
@@ -97,7 +101,7 @@ The Skill is the operating contract and orchestration layer; providers remain re
 | Topic and evidence | Authorized WeChat Reading Skill, attributable public metadata, user-supplied sources, Codex research | Never bypass login or platform controls; reader reviews are viewpoints, not factual evidence |
 | Story and bilingual copy | Codex writing/reasoning plus human editorial review | Claims and quotations require source review; English stays `needs_native_review` until approved |
 | Editorial stills | Codex image generation with GPT Image or another approved provider | Save prompt, model, date, hash, and approval; never generate a fake real-world book cover |
-| Paper-collage clips | Gemini API with Gemini Omni Flash/Veo 3.1, or user-operated Google Flow | Requires user authorization, provider cost/credit approval, immutable prompts and operation/export provenance |
+| VOX-style visual beats | Gemini API with `gemini-omni-flash-preview` / `veo-3.1-generate-preview`, or user-operated Google Flow | Requires user authorization, provider cost/credit approval, immutable prompts and operation/export provenance |
 | Narration | Local VoxCPM2, authorized human voice, or approved cloud TTS | Clone only voices with explicit permission and record the authorization |
 | Timing and captions | faster-whisper, Whisper-compatible ASR, or editor transcript | Derive timing from the real narration; never invent timestamps |
 | Book cover | Authorized publisher/retailer/user-supplied cover plus provenance metadata | Keep it separate from generated art and clear reuse rights before public release |
@@ -119,6 +123,17 @@ python3 skills/book-video-factory/scripts/bootstrap_workspace.py --workspace .
 python3 skills/book-video-factory/scripts/doctor.py --profile planning
 python3 skills/book-video-factory/scripts/bootstrap_workspace.py --workspace . \
   --slug my-first-book --book-title 'Example Book' --author 'Example Author'
+```
+
+The command above creates the original style. A VOX-style project must select its generation lane explicitly:
+
+```bash
+python3 skills/book-video-factory/scripts/bootstrap_workspace.py --workspace . \
+  --slug my-vox-book --book-title 'Example Book' --author 'Example Author' \
+  --style-profile paper-collage-explainer-v1 \
+  --generation-lane gemini-api
+
+# Or use: --generation-lane google-flow
 ```
 
 For a project backed by an upstream content asset system:

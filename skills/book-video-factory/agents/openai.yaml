@@ -1,4 +1,4 @@
 interface:
-  display_name: "图书号短视频工厂"
-  short_description: "Auditable book video, collage, and content workflow"
-  default_prompt: "Use $book-video-factory to prepare an auditable book video in either the bilingual editorial or paper-collage explainer style."
+  display_name: "图书视频工厂"
+  short_description: "可审计的双语编辑模板与VOX风格图书视频全流程生产工作流"
+  default_prompt: "Use $book-video-factory to prepare an auditable book video. Keep the original 双语编辑模板图书视频 and the new VOX风格图书视频 as separate selectable styles."

@@ -57,10 +57,52 @@ class BootstrapTests(unittest.TestCase):
             self.assertTrue((workspace / "book_video_factory/scripts/content_bridge.py").is_file())
             self.assertFalse(any((workspace / "book_video_factory").rglob("*.pyc")))
             self.assertTrue((workspace / "book_video_factory/config/release_profiles/book-v4-bilingual-3x4.json").is_file())
+            workflow = json.loads(original)["workflow"]
             self.assertEqual(
-                json.loads(original)["workflow"]["state_source"],
+                workflow["state_source"],
                 "derived_gate_evaluator",
             )
+            self.assertEqual(workflow["style_profile_id"], "book-editorial-bilingual-v2")
+            self.assertEqual(workflow["generation_lane"], "local-renderer")
+
+    def test_vox_style_requires_lane_and_is_initialized_separately(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            bootstrap.bootstrap_workspace(workspace)
+            with self.assertRaisesRegex(ValueError, "requires --generation-lane"):
+                bootstrap.create_project(
+                    workspace,
+                    "vox-missing-lane",
+                    "Example Book",
+                    "Example Author",
+                    style_profile_id="paper-collage-explainer-v1",
+                )
+            project, _ = bootstrap.create_project(
+                workspace,
+                "vox-example",
+                "Example Book",
+                "Example Author",
+                style_profile_id="paper-collage-explainer-v1",
+                generation_lane="google-flow",
+            )
+            workflow = json.loads(
+                (project / "project.json").read_text(encoding="utf-8")
+            )["workflow"]
+            self.assertEqual(workflow["style_profile_id"], "paper-collage-explainer-v1")
+            self.assertEqual(workflow["style_display_name"], "VOX风格图书视频")
+            self.assertEqual(workflow["release_profile_id"], "book-vox-vertical-9x16-v1")
+            self.assertEqual(workflow["generation_lane"], "google-flow")
+            self.assertTrue((project / "03_images_生成图片/collage-broll").is_dir())
+            with self.assertRaisesRegex(ValueError, "does not support workflow mode"):
+                bootstrap.create_project(
+                    workspace,
+                    "vox-content-backed",
+                    "Example Book",
+                    "Example Author",
+                    mode="content-system-backed",
+                    style_profile_id="paper-collage-explainer-v1",
+                    generation_lane="google-flow",
+                )
 
     def test_content_system_mode_is_available_from_clean_bootstrap(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -96,6 +138,35 @@ class BootstrapTests(unittest.TestCase):
                     "Example Book",
                     "Example Author",
                     "single-book",
+                )
+
+    def test_existing_project_rejects_style_release_profile_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            workspace = Path(temporary)
+            bootstrap.bootstrap_workspace(workspace)
+            project, _ = bootstrap.create_project(
+                workspace,
+                "vox-example",
+                "Example Book",
+                "Example Author",
+                style_profile_id="paper-collage-explainer-v1",
+                generation_lane="google-flow",
+            )
+            contract_path = project / "project.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["workflow"]["release_profile_id"] = "book-v4-bilingual-3x4"
+            contract_path.write_text(
+                json.dumps(contract, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "release profile"):
+                bootstrap.create_project(
+                    workspace,
+                    "vox-example",
+                    "Example Book",
+                    "Example Author",
+                    style_profile_id="paper-collage-explainer-v1",
+                    generation_lane="google-flow",
                 )
 
     def test_slug_rejects_unsafe_values(self) -> None:

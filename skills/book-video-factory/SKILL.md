@@ -1,9 +1,9 @@
 ---
 name: book-video-factory
-description: Create or operate a portable, auditable Chinese book-review short-video workflow from a clean local workspace. Use when starting a book-video factory, producing a 3:4 bilingual package or a 9:16 editorial paper-collage explainer, importing dbs-content-system source documents and QST/CON/OPI/CAS/SOL content units, linking script claims to evidence and scenes, using approved Gemini API or Google Flow assets, collecting rights-aware media, recording run cost, or preparing a local master for optional ChatCut fine editing.
+description: Create or operate a portable, auditable Chinese book-review short-video workflow from a clean local workspace. Use when starting a book-video factory, choosing between the original 3:4 bilingual editorial style and the new 9:16 VOX-style book-video workflow, importing dbs-content-system source documents and QST/CON/OPI/CAS/SOL content units, linking script claims to evidence and scenes, using approved Gemini API or Google Flow assets, collecting rights-aware media, recording run cost, or preparing a local master for optional ChatCut fine editing.
 ---
 
-# 图书号短视频工厂
+# 图书视频工厂
 
 ## First use
 
@@ -39,27 +39,31 @@ description: Create or operate a portable, auditable Chinese book-review short-v
 
 Select one style profile before making assets; never silently mix their frame, typography, or review contracts.
 
-- **`book-editorial-bilingual-v2`** — deterministic 3:4 bilingual template with real cover, approved stills, local narration, rendered captions, and optional 9:16 derivative.
-- **`paper-collage-explainer-v1`** — 9:16 editorial paper-collage explainer. Split narration into one 4–8 second concept/visual-metaphor unit at a time; approve the metaphor, still/contact sheet, and generated clip separately. Read [references/paper-collage-explainer.md](references/paper-collage-explainer.md) before selecting this profile.
+- **双语编辑模板图书视频（原风格）** — machine ID `book-editorial-bilingual-v2`. Deterministic 3:4 bilingual template with a real cover, 12 approved stills, local narration, rendered captions, and an optional 9:16 derivative.
+- **VOX风格图书视频（新增风格）** — machine ID `paper-collage-explainer-v1`. A 9:16, voice-led editorial paper-collage explainer made from 4–8-second visual beats. It is a descriptive public label, not an affiliation claim or permission to imitate a named publisher/program. Read [references/paper-collage-explainer.md](references/paper-collage-explainer.md) before selecting it.
 
-For `paper-collage-explainer-v1`, choose one generation lane explicitly:
+The original style is the backward-compatible default. For VOX style, create the project with `--style-profile paper-collage-explainer-v1` and explicitly choose one generation lane:
 
-- **Gemini API** — programmatic lane. Requires a user-authorized `GEMINI_API_KEY`, the current Google Gen AI SDK, provider cost/quota approval, and an immutable operation/output record. Use Gemini Omni Flash by default; use Veo 3.1 when first/last-frame control or Veo extension is required.
-- **Google Flow** — manual creative lane. Requires an eligible Google AI subscription and desktop Chromium session. Do not assume Flow exposes a programmable API; download/export only user-authorized outputs and record prompts, credits exposed by the UI, asset hashes, and manual-run provenance.
+- **`gemini-api`** — programmatic lane. Requires a user-authorized `GEMINI_API_KEY`, the current Google Gen AI SDK, provider cost/quota approval, and an immutable operation/output record. Use `gemini-omni-flash-preview` through the Interactions API by default; use `veo-3.1-generate-preview` through `generate_videos` when first/last-frame control or video extension is required.
+- **`google-flow`** — manual creative lane. Requires current account/region eligibility, an eligible Google AI plan, available credits, and a user-operated browser session. Do not assume Flow exposes a programmable API; import only user-authorized exports and record prompts, visible credits, hashes, and manual-run provenance.
+
+The VOX-style path is currently an orchestration-and-import workflow. Do not claim this repository bundles a one-click Google video generator.
+The current `dbs-content-system` scene-traceability contract is V4-specific, so `content-system-backed` is supported by the original style only; VOX style is fail-closed to `single-book` until a manifest-based traceability contract is implemented and tested.
 
 ## Production sequence
 
 1. **Topic and evidence** — collect public, attributable book metadata. If a WeRead credential or another data source is unavailable, record the limitation and use user-supplied/publicly attributable evidence; do not bypass logins or platform restrictions.
-2. **Script** — create a concise Chinese script plus an English production draft. Keep claims tied to evidence and mark the English version `needs_native_review` until approved.
-3. **Assets** — obtain a real cover with provenance, 12 topic-specific scenes without embedded text, a permitted BGM with attribution, and either a user-authorized narration reference or an explicitly approved synthetic voice design.
-4. **Voice and timing** — generate/record narration only with authorization. Create a timing map with a permitted local ASR tool or an editor transcript; never silently invent timestamps.
-5. **Render** — build a 3:4 local master with centered title treatment, bilingual captions, safe margins, and project-specific music/SFX. For `paper-collage-explainer-v1`, normalize approved silent 9:16 clips into a separate timeline, then add project-owned narration, captions, BGM, and SFX locally. Use an original/generated SFX or a user-supplied file with recorded rights; never copy a reference video's audio.
-6. **QC and delivery** — run technical checks, verify all release gates, write a manifest and cost events, then optionally import the passed local master into ChatCut for fine editing.
+2. **Script, voice, and timing** — create and approve a concise Chinese script plus any English production draft. Generate/record narration only with authorization; derive timestamps from actual audio via permitted ASR or an editor transcript. Never invent timing. VOX style locks this timing before full clip generation.
+3. **Style-specific assets** — the original style obtains a real cover plus 12 approved text-free stills. VOX style approves one metaphor, then a first/last frame or contact sheet, then each generated visual beat; prompts use non-branded editorial descriptors.
+4. **Picture lock** — map approved assets to the locked narration. Normalize VOX clips to silent 720×1280 H.264 at the local 30 fps timeline without speed changes; inspect cadence and keep optical flow off by default.
+5. **Audio and render** — add project-owned narration, local captions, permitted BGM and SFX. BGM rights approval and creative `bgm_review` are separate decisions. Never copy a reference video's audio.
+6. **QC and delivery** — run technical and human gates, bind approvals to hashes, write manifests and cost events, then optionally import the passed local master into ChatCut for fine editing.
 
 ## Workflow contracts
 
-- Use `config/release_profiles/book-v4-bilingual-3x4.json` as the named V4 contract instead of treating V4 dimensions and bilingual layout as universal constants.
-- Use `scripts/workflow.py evaluate --release-id <release-id>` to derive a release-scoped workflow state. `project.json.status` is not an approval mechanism, and approvals from different releases are never combined.
+- `project.json.workflow.style_profile_id` selects the visual workflow; its mapped `release_profile_id` selects the renderer/output contract. Existing projects without a style ID fall back to the original style only for compatibility.
+- Use `config/release_profiles/book-v4-bilingual-3x4.json` for the original style and `config/release_profiles/book-vox-vertical-9x16-v1.json` for VOX style; never treat either style's dimensions or assets as universal constants.
+- Use `scripts/workflow.py evaluate --project <project> --release-id <release-id>` to resolve the project profile and derive a release-scoped state. `project.json.status` is not an approval mechanism, and approvals from different releases are never combined.
 - Record human decisions with `scripts/workflow.py approve`; approvals bind to the reviewed file hash and become stale after edits.
 - Use `scripts/workflow.py manifest-stage` for immutable stage manifests with input/output hashes.
 - Long titles are pixel-measured, semantically wrapped to at most two lines, and fail closed if they cannot fit the configured safe area.
@@ -71,8 +75,9 @@ For `paper-collage-explainer-v1`, choose one generation lane explicitly:
 
 - Do not use a generated imitation as a book cover. Record the actual cover source and rights/usage status.
 - Do not reuse copyrighted music, sound effects, reference-video audio, a person's voice, public-figure likeness, or account branding without explicit rights.
-- Require 12 non-duplicate numbered scene files (`S01`–`S12`) for a V4-style delivery.
-- Do not mark native English review, cover rights, BGM attribution, or user approval as complete when they are absent.
+- Require 12 non-duplicate numbered stills (`S01`–`S12`) only for the original V4-style delivery. VOX style uses its approved clip manifest and does not impose a universal scene count.
+- For VOX style, keep `source_audit`, `gate_1_metaphor`, `gate_2_still`, `gate_3_clip_qa`, `bgm_review`, `audio_qc`, `local_master_review`, and `publish` as distinct hash-bound gates. Apply `cover_rights` and `english_native` only when those elements are delivered.
+- Accept invisible provider provenance such as SynthID; do not remove or tamper with it. Reject visible third-party watermarks.
 - Never invent token counts. Record only usage values exposed by the relevant provider.
 
 ## Cost ledger

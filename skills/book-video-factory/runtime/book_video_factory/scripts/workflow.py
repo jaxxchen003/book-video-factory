@@ -11,10 +11,11 @@ import _bootstrap  # noqa: F401
 from book_video_factory.contracts import ContractError, ReleaseProfile
 from book_video_factory.gates import evaluate_workflow_state
 from book_video_factory.manifests import record_approval, write_stage_manifest
+from book_video_factory.style_profiles import StyleProfileError, project_workflow
 
 
 FACTORY = Path(__file__).resolve().parents[1]
-DEFAULT_PROFILE = FACTORY / "config/release_profiles/book-v4-bilingual-3x4.json"
+DEFAULT_PROFILE_ID = "book-v4-bilingual-3x4"
 STATE_ORDER = (
     "invalid",
     "draft",
@@ -46,13 +47,38 @@ def check_spec(value: str) -> dict[str, str]:
     }
 
 
+def release_profile_path(project: Path, explicit: Path | None = None) -> Path:
+    workflow = project_workflow(project)
+    profile_id = str(workflow.get("release_profile_id") or DEFAULT_PROFILE_ID)
+    if explicit is not None:
+        explicit_path = explicit.expanduser().resolve()
+        explicit_profile = ReleaseProfile.load(explicit_path)
+        if explicit_profile.profile_id != profile_id:
+            raise ContractError(
+                f"project style requires release profile {profile_id}; refusing "
+                f"incompatible --profile {explicit_profile.profile_id}"
+            )
+        return explicit_path
+    profile_directory = (FACTORY / "config" / "release_profiles").resolve()
+    path = (profile_directory / f"{profile_id}.json").resolve()
+    try:
+        path.relative_to(profile_directory)
+    except ValueError as error:
+        raise ContractError("project release_profile_id escapes config directory") from error
+    return path
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subcommands = parser.add_subparsers(dest="command", required=True)
 
     evaluate = subcommands.add_parser("evaluate")
     evaluate.add_argument("--project", type=Path, required=True)
-    evaluate.add_argument("--profile", type=Path, default=DEFAULT_PROFILE)
+    evaluate.add_argument(
+        "--profile",
+        type=Path,
+        help="Optional override; defaults to project.json workflow.release_profile_id.",
+    )
     evaluate.add_argument("--release-id")
     evaluate.add_argument("--target", choices=STATE_ORDER[1:])
 
@@ -70,7 +96,13 @@ def main() -> int:
     manifest.add_argument("--project", type=Path, required=True)
     manifest.add_argument("--stage", required=True)
     manifest.add_argument("--release-id", required=True)
-    manifest.add_argument("--release-profile", default="book-v4-bilingual-3x4")
+    manifest.add_argument(
+        "--release-profile",
+        help=(
+            "Compatibility assertion only. If supplied, it must equal the release "
+            "profile mapped by the project's style."
+        ),
+    )
     manifest.add_argument("--input", action="append", default=[])
     manifest.add_argument("--output", action="append", required=True)
     manifest.add_argument("--check", action="append", default=[])
@@ -81,11 +113,17 @@ def main() -> int:
 
     if args.command == "evaluate":
         try:
-            profile = ReleaseProfile.load(args.profile)
-        except ContractError as error:
+            profile = ReleaseProfile.load(release_profile_path(project, args.profile))
+        except (ContractError, StyleProfileError) as error:
             print(json.dumps({"error": str(error)}, ensure_ascii=False))
             return 3
-        result = evaluate_workflow_state(project, profile, release_id=args.release_id)
+        try:
+            result = evaluate_workflow_state(
+                project, profile, release_id=args.release_id
+            )
+        except (StyleProfileError, ValueError) as error:
+            print(json.dumps({"error": str(error)}, ensure_ascii=False))
+            return 3
         print(json.dumps(result, ensure_ascii=False, indent=2))
         if not args.target:
             return 0
@@ -108,11 +146,27 @@ def main() -> int:
     inputs = [artifact_spec(project, value) for value in args.input]
     outputs = [artifact_spec(project, value) for value in args.output]
     checks = [check_spec(value) for value in args.check]
+    workflow_profile_id = str(project_workflow(project)["release_profile_id"])
+    if args.release_profile and args.release_profile != workflow_profile_id:
+        print(
+            json.dumps(
+                {
+                    "error": (
+                        f"project style requires release profile {workflow_profile_id}; "
+                        f"refusing incompatible --release-profile {args.release_profile}"
+                    )
+                },
+                ensure_ascii=False,
+            )
+        )
+        return 3
     output = write_stage_manifest(
         project,
         stage=args.stage,
         release_id=args.release_id,
-        release_profile_id=args.release_profile,
+        release_profile_id=(
+            args.release_profile or workflow_profile_id
+        ),
         inputs=inputs,
         outputs=outputs,
         checks=checks,

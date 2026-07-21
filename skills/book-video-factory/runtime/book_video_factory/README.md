@@ -1,4 +1,4 @@
-# 图书号短视频流水线工厂
+# 图书视频工厂运行时
 
 这个目录只保存可复用能力：程序、脚本、模板契约、依赖说明和运行文档。每一本书的实际资料与媒体产物保存在相邻的 `book_video_warehouse/`，避免把工厂代码和生产素材混在一起。
 
@@ -11,7 +11,9 @@
 - 本机依赖自检：FFmpeg、VoxCPM2、Whisper、HyperFrames、Node、微信读书凭证和磁盘空间。
 - 批准稿到成片的一键构建：ASR 字级对齐、镜头时间线、中文字幕图层、轻推镜、BGM ducking、最终混音和媒体 QC。
 - V2 品牌模板：固定钩子片头、8 张主题卡高速切换、真实书封合成、居中出版物字体、中英双语字幕、分段音乐增益，以及 3:4/9:16/clean 多版本交付。
-- `paper-collage-explainer-v1` 风格：面向 9:16 编辑型纸拼贴讲解视频，以“每个概念一条 4–8 秒隐喻 B-roll”为单元；支持经授权的 Gemini API 自动化或 Google Flow 手工生成，并将旁白、字幕、BGM、SFX 与 QC 保留在本地母版。
+- 双风格项目契约：原有 `book-editorial-bilingual-v2`（双语编辑模板图书视频）保持 3:4 确定性本地渲染；新增 `paper-collage-explainer-v1`（VOX风格图书视频）使用 9:16、每次信息变化一条 4–8 秒 visual beat 的编排/导入工作流。
+- VOX 风格支持用户授权的 Gemini API 程序化渠道或 Google Flow 手工导演渠道，并将旁白定时、字幕、BGM、SFX、QC 与交付保留在本地母版；当前运行时不宣称内置一键 Google 视频生成器。
+- 当前 `content-system-backed` 的场景追溯仍是原风格 V4 contract；VOX 风格暂时只允许 `single-book`，直到 manifest-based 追溯实现并通过测试。
 - 独立单元测试，不依赖现有人物视频项目的历史素材。
 - `single-book` 与 `content-system-backed` 双模式；后者消费 `dbs-content-system` 的不可变内容资产快照。
 - `source_document / content_unit / claim / assembly_brief` 对象校验，以及脚本—Claim—场景全链路追溯。
@@ -41,6 +43,20 @@ python3 book_video_factory/scripts/build_final_video_v2.py \
   book_video_warehouse/projects/doudi-qingshan
 ```
 
+上述命令创建原风格项目。创建 VOX 风格项目时必须单独选择生成渠道：
+
+```bash
+python3 book_video_factory/scripts/init_project.py \
+  --warehouse book_video_warehouse \
+  --slug my-vox-book \
+  --book-title '示例书名' \
+  --author '示例作者' \
+  --style-profile paper-collage-explainer-v1 \
+  --generation-lane gemini-api
+
+# 或把最后一项改为：--generation-lane google-flow
+```
+
 如果选题来自上游内容资产系统，初始化时增加 `--mode content-system-backed`，再用 `scripts/content_bridge.py` 导入 package 并附加 traceability。详见 [内容资产系统桥接](docs/CONTENT_SYSTEM_BRIDGE.md)。
 
 正式渲染要求项目内已有 `script.approved.json`、锁定版旁白、ASR 字级时间戳、12 张批准镜头和已登记授权的 BGM。脚本会输出预览片、正式成片、SRT、渲染清单、音乐署名文件与 QC 报告，并把交付包复制到 `10_delivery_交付/`。
@@ -57,4 +73,4 @@ Freesound BGM 凭据同样只从 `FREESOUND_API_KEY` 或 macOS Keychain 读取�
 
 人声、BGM 与 GPT Image 2 的统一供应策略见 [资产供应策略](docs/ASSET_PROVIDER_POLICY.md)。
 
-纸拼贴讲解风格的独立工作流、Gemini API/Google Flow 选择、审批闸门和产物契约见 [paper-collage-explainer-v1](../../references/paper-collage-explainer.md)。
+新增的 VOX风格图书视频工作流、Gemini API/Google Flow 选择、审批闸门和产物契约见 [paper-collage-explainer-v1](../../references/paper-collage-explainer.md)。两个风格独立选择，VOX 风格不会替代原有双语编辑模板。

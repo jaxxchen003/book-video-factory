@@ -6,6 +6,10 @@ from pathlib import Path
 
 import _bootstrap  # noqa: F401
 from book_video_factory.project import initialize_project
+from book_video_factory.style_profiles import (
+    DEFAULT_STYLE_PROFILE_ID,
+    available_style_profile_ids,
+)
 
 
 def main() -> int:
@@ -22,7 +26,20 @@ def main() -> int:
     )
     parser.add_argument(
         "--release-profile",
-        default="book-v4-bilingual-3x4",
+        default=None,
+        help=(
+            "Compatibility assertion only. If supplied, it must equal the release "
+            "profile mapped by --style-profile."
+        ),
+    )
+    parser.add_argument(
+        "--style-profile",
+        choices=available_style_profile_ids(),
+        default=DEFAULT_STYLE_PROFILE_ID,
+    )
+    parser.add_argument(
+        "--generation-lane",
+        help="Required for VOX style projects: gemini-api or google-flow.",
     )
     args = parser.parse_args()
     project = initialize_project(
@@ -33,6 +50,8 @@ def main() -> int:
         args.reference_video,
         args.mode,
         args.release_profile,
+        args.style_profile,
+        args.generation_lane,
     )
     print(project)
     return 0

@@ -1,10 +1,11 @@
-# Book Video Factory v2 合同层
+# 图书视频工厂合同层
 
 这一层把现有 V4/V5 渲染器包装成可审计执行引擎，不重写已经稳定的媒体合成代码。
 
 ## 对象边界
 
-- `release_profile`：平台、画布、脚本、场景、标题安全区和编码规格。
+- `style_profile`：公开风格名称、稳定 machine ID、生成渠道、执行模式和风格专属审批。
+- `release_profile`：画布、脚本/场景策略、标题安全区、编码规格和渲染器类型。
 - `stage_manifest`：一次阶段运行的输入、输出、hash、检查、工具与 release ID。
 - `approval_event`：人工审批决定以及审批时对应的文件 hash。
 - `source_document / content_unit / claim / assembly_brief`：由 `content-system-backed` 模式以不可变 JSON 快照接入；不复制上游内容系统的主题、关系和去重实现。
@@ -22,9 +23,13 @@
 
 完整桥接格式与命令见 [内容资产系统桥接](CONTENT_SYSTEM_BRIDGE.md)。
 
-## 首个 release profile
+## 两组内置 style / release contract
 
-`config/release_profiles/book-v4-bilingual-3x4.json` 冻结当前已经验证的 V4 能力：
+### 双语编辑模板图书视频（原风格）
+
+- Style：`book-editorial-bilingual-v2`
+- Release：`book-v4-bilingual-3x4`
+- Renderer：`build_batch_video_v3`
 
 - `720×960 / 30fps`
 - 15 行双语脚本
@@ -32,4 +37,16 @@
 - H.264 + AAC
 - 标题左右各 56px 安全边距、最多两行、34–70px 动态字号
 
-这不是把所有平台都硬编码成 V4，而是先把已经验证的行为命名为一个可选择、可版本化的 profile。
+### VOX风格图书视频（新增风格）
+
+- Style：`paper-collage-explainer-v1`
+- Release：`book-vox-vertical-9x16-v1`
+- Renderer contract：`external_clip_timeline_v1`（编排/导入，不是内置一键生成器）
+
+- `720×1280 / 30fps` 本地母版
+- 可变脚本行数和 manifest-defined MP4 visual beats
+- Gemini API 或 Google Flow 生成渠道必须显式选择
+- 48px 水平安全边距、120px 字幕底部安全区
+- H.264 + AAC，旁白优先，约 −16 LUFS，真峰值上限 −1.2 dBFS
+
+两个 profile 是独立合同，不把任一风格的场景数量、画幅或渲染器当成通用常量。旧项目没有 `style_profile_id` 时只为兼容回退到原风格。

@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "book-vox-vertical-9x16-v1",
+  "profile_revision": 1,
+  "renderer": "external_clip_timeline_v1",
+  "workflow_kind": "vox_style_book_video",
+  "canvas": {
+    "width": 720,
+    "height": 1280,
+    "fps": 30,
+    "aspect_ratio": "9:16"
+  },
+  "script": {
+    "language_mode": "zh_or_bilingual",
+    "line_count_policy": "variable"
+  },
+  "visual": {
+    "scene_count_policy": "manifest",
+    "scene_format": "mp4",
+    "asset_manifest": "03_images_生成图片/collage-broll/video-assets-v1.json",
+    "unique_by": "sha256",
+    "generated_audio_policy": "absent_or_stripped"
+  },
+  "typography": {
+    "title_safe_margin_x_px": 48,
+    "title_max_width_px": 624,
+    "title_max_lines": 2,
+    "title_max_font_size_px": 68,
+    "title_min_font_size_px": 32,
+    "title_fit_strategy": "semantic_two_line_then_shrink",
+    "subtitle_safe_margin_x_px": 48,
+    "subtitle_safe_margin_bottom_px": 120,
+    "overflow_policy": "fail"
+  },
+  "audio": {
+    "codec": "aac",
+    "target_lufs": -16.0,
+    "true_peak_dbfs": -1.2,
+    "narration_priority": true
+  },
+  "video": {
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "frame_rate_policy": "normalize_cfr_without_speed_change"
+  }
+}

@@ -8,7 +8,7 @@
     "schema_version": {"const": "1.0"},
     "profile_id": {"type": "string", "minLength": 1},
     "profile_revision": {"type": "integer", "minimum": 1},
-    "renderer": {"const": "build_batch_video_v3"},
+    "renderer": {"enum": ["build_batch_video_v3", "external_clip_timeline_v1"]},
     "canvas": {
       "type": "object",
       "required": ["width", "height", "fps"],
@@ -19,8 +19,23 @@
         "aspect_ratio": {"type": "string"}
       }
     },
-    "script": {"type": "object"},
-    "visual": {"type": "object"},
+    "script": {
+      "type": "object",
+      "properties": {
+        "language_mode": {"enum": ["zh", "bilingual", "zh_or_bilingual"]},
+        "line_count": {"type": "integer", "minimum": 1},
+        "line_count_policy": {"enum": ["variable"]}
+      }
+    },
+    "visual": {
+      "type": "object",
+      "properties": {
+        "scene_count": {"type": "integer", "minimum": 1},
+        "scene_count_policy": {"enum": ["manifest"]},
+        "scene_format": {"enum": ["png", "jpg", "jpeg", "mp4"]},
+        "asset_manifest": {"type": "string", "minLength": 1}
+      }
+    },
     "typography": {"type": "object"},
     "audio": {"type": "object"},
     "video": {"type": "object"}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "style_id": "book-editorial-bilingual-v2",
+  "display_name": {
+    "zh-CN": "双语编辑模板图书视频",
+    "en": "Bilingual Editorial Book Video"
+  },
+  "release_profile_id": "book-v4-bilingual-3x4",
+  "execution_mode": "deterministic_local_renderer",
+  "supported_workflow_modes": ["single-book", "content-system-backed"],
+  "description": "The original deterministic 3:4 book-video style with a real cover, approved stills, local narration, and bilingual captions.",
+  "output": {
+    "local_master": {
+      "width": 720,
+      "height": 960,
+      "fps": 30,
+      "ratio": "3:4",
+      "codec": "h264+aac"
+    },
+    "optional_derivative": {
+      "ratio": "9:16"
+    }
+  },
+  "generation_lane_required": false,
+  "default_generation_lane": "local-renderer",
+  "generation_lanes": {
+    "local-renderer": {
+      "mode": "deterministic_local_render",
+      "renderer": "build_batch_video_v3",
+      "external_video_api_required": false
+    }
+  },
+  "asset_ready_approvals": [],
+  "required_publish_approvals": [
+    "script",
+    "cover_rights",
+    "bgm_rights",
+    "sfx_rights",
+    "voice_rights",
+    "english_native",
+    "publish"
+  ],
+  "conditional_publish_approvals": {},
+  "prohibitions": [
+    "generated_book_cover",
+    "unlicensed_music_or_sfx",
+    "unauthorized_voice_clone",
+    "unreviewed_publish"
+  ]
+}

@@ -4,22 +4,21 @@
 
 This skill gives Codex a portable operating contract plus the deterministic factory runtime: renderer scripts, release profiles, schemas, dependency diagnostics, title safe-area logic, immutable manifests, hash-bound approvals, and the cost ledger. It does not contain a voice, cover, BGM, SFX, reference video, book text, external credentials, or a publishing account.
 
-## Minimum inputs before rendering
+## Choose a style before rendering
 
-1. A topic and an approved book/title/author match.
-2. Evidence records and a cover source record.
-3. A 15-line Chinese script and English production draft.
-4. Twelve approved, distinct, text-free scene images (`S01`–`S12`).
-5. An authorized narration method and a timing map.
-6. One permitted BGM plus attribution/provenance.
-7. A project-specific original or rights-cleared intro SFX.
+- **双语编辑模板图书视频（原风格）** — `book-editorial-bilingual-v2`. Requires the V4 3:4 contract, a real cover with provenance, a 15-line Chinese/English script, and 12 approved distinct text-free stills (`S01`–`S12`).
+- **VOX风格图书视频（新增风格）** — `paper-collage-explainer-v1`. Requires a `single-book` project, an explicit `gemini-api` or `google-flow` lane, approved narration timing, and a manifest-defined set of 4–8-second visual beats. It does not require exactly 12 clips.
+
+Both styles require an approved topic/book match, attributable evidence, authorized narration, real timing data, permitted BGM/SFX with provenance, technical QC, local-master review, and a separate publish decision. Cover rights and native-English review apply when those elements are delivered.
 
 ## Supported paths
 
 - **Local renderer path:** install Python 3.11+, Pillow, FFmpeg/FFprobe, and a permitted ASR/TTS implementation. Keep tool paths/configuration in the workspace, not in the Skill.
+- **VOX / Gemini API path:** select `--style-profile paper-collage-explainer-v1 --generation-lane gemini-api`, keep `GEMINI_API_KEY` in the environment only, and run `doctor.py --profile production --project <project>` before generation.
+- **VOX / Google Flow path:** select `--generation-lane google-flow`, work in the user's eligible Google account, and import only legitimate exports with prompt, credits, and hash provenance. Flow is not treated as a programmable API.
 - **Editor-first path:** use ChatCut only if the user has installed/authenticated it. Keep the local master and subtitle file before importing. If ChatCut is unavailable, continue with local files and explain the missing polish step.
 - **Research fallback:** if WeRead or another credentialed source is unavailable, use attributable public metadata or user-provided sources and record the source limitation. Never circumvent access controls.
-- **Content-system-backed path:** create the project with `--mode content-system-backed`, import a validated `dbs-content-system` JSON snapshot, and attach traceability after the script and scene manifest exist. The Skill preserves upstream relative paths and hashes but never edits the upstream content system.
+- **Content-system-backed path:** use the original style with `--mode content-system-backed`, import a validated `dbs-content-system` JSON snapshot, and attach traceability after the script and V4 scene manifest exist. The current VOX profile rejects this mode until its manifest-based traceability contract is implemented.
 
 ## Content-system bridge sequence
 
