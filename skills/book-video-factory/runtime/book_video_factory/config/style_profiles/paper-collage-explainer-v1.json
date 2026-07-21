@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "style_id": "paper-collage-explainer-v1",
+  "name": "9:16 editorial paper-collage explainer",
+  "output": {
+    "generation": {"width": 720, "height": 1280, "fps": 24, "ratio": "9:16", "audio": "strip_before_local_render"},
+    "local_master": {"width": 720, "height": 1280, "fps": 30, "ratio": "9:16", "codec": "h264+aac"}
+  },
+  "script": {
+    "concept_seconds_min": 4,
+    "concept_seconds_max": 8,
+    "one_visual_metaphor_per_concept": true,
+    "caption_source_of_truth": "approved_script_plus_local_asr_timing"
+  },
+  "generation_lanes": {
+    "gemini_api": {
+      "required_secret": "GEMINI_API_KEY",
+      "default_model": "gemini-omni-flash",
+      "frame_control_model": "veo-3.1",
+      "require_operation_and_cost_evidence": true
+    },
+    "google_flow": {
+      "mode": "manual_ui",
+      "requires_user_subscription_and_credits": true,
+      "api_assumption": "forbidden",
+      "require_prompt_export_and_hash_evidence": true
+    }
+  },
+  "gates": ["script", "gate_1_metaphor", "gate_2_still", "gate_3_clip_qa", "voice_rights", "bgm_rights", "sfx_rights", "local_master_review", "cover_rights", "english_native", "publish"],
+  "prohibitions": ["brand_or_program_imitation", "generated_book_cover", "embedded_caption_text", "unreviewed_generated_audio", "watermarked_or_unverified_export"]
+}

@@ -1,4 +1,4 @@
 interface:
   display_name: "图书号短视频工厂"
-  short_description: "Auditable book-video and content-asset workflow"
-  default_prompt: "Use $book-video-factory to bootstrap a clean workspace and prepare either a single-book or content-system-backed video project."
+  short_description: "Auditable book video, collage, and content workflow"
+  default_prompt: "Use $book-video-factory to prepare an auditable book video in either the bilingual editorial or paper-collage explainer style."

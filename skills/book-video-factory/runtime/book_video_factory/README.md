@@ -11,6 +11,7 @@
 - 本机依赖自检：FFmpeg、VoxCPM2、Whisper、HyperFrames、Node、微信读书凭证和磁盘空间。
 - 批准稿到成片的一键构建：ASR 字级对齐、镜头时间线、中文字幕图层、轻推镜、BGM ducking、最终混音和媒体 QC。
 - V2 品牌模板：固定钩子片头、8 张主题卡高速切换、真实书封合成、居中出版物字体、中英双语字幕、分段音乐增益，以及 3:4/9:16/clean 多版本交付。
+- `paper-collage-explainer-v1` 风格：面向 9:16 编辑型纸拼贴讲解视频，以“每个概念一条 4–8 秒隐喻 B-roll”为单元；支持经授权的 Gemini API 自动化或 Google Flow 手工生成，并将旁白、字幕、BGM、SFX 与 QC 保留在本地母版。
 - 独立单元测试，不依赖现有人物视频项目的历史素材。
 - `single-book` 与 `content-system-backed` 双模式；后者消费 `dbs-content-system` 的不可变内容资产快照。
 - `source_document / content_unit / claim / assembly_brief` 对象校验，以及脚本—Claim—场景全链路追溯。
@@ -55,3 +56,5 @@ Freesound BGM 凭据同样只从 `FREESOUND_API_KEY` 或 macOS Keychain 读取�
 稳定使用方式、V4 不变量、成本台账和 ChatCut 精修边界见 [稳定生产工作流](docs/STABLE_WORKFLOW.md)。
 
 人声、BGM 与 GPT Image 2 的统一供应策略见 [资产供应策略](docs/ASSET_PROVIDER_POLICY.md)。
+
+纸拼贴讲解风格的独立工作流、Gemini API/Google Flow 选择、审批闸门和产物契约见 [paper-collage-explainer-v1](../../references/paper-collage-explainer.md)。

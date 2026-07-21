@@ -1,6 +1,6 @@
 ---
 name: book-video-factory
-description: Create or operate a portable, auditable Chinese book-review short-video workflow from a clean local workspace. Use when starting a book-video factory, turning an approved book topic into a 3:4 bilingual short-video package, importing dbs-content-system source documents and QST/CON/OPI/CAS/SOL content units, linking script claims to evidence and scenes, collecting rights-aware assets, recording run cost, or preparing a local master for optional ChatCut fine editing.
+description: Create or operate a portable, auditable Chinese book-review short-video workflow from a clean local workspace. Use when starting a book-video factory, producing a 3:4 bilingual package or a 9:16 editorial paper-collage explainer, importing dbs-content-system source documents and QST/CON/OPI/CAS/SOL content units, linking script claims to evidence and scenes, using approved Gemini API or Google Flow assets, collecting rights-aware media, recording run cost, or preparing a local master for optional ChatCut fine editing.
 ---
 
 # 图书号短视频工厂
@@ -35,13 +35,25 @@ description: Create or operate a portable, auditable Chinese book-review short-v
 - Create a new release directory for every revision. Preserve the local master as the source of truth; ChatCut is an optional editable polish layer.
 - Keep human gates for topic approval, script approval, source/rights approval, native-language review, and publish approval.
 
+## Style profiles
+
+Select one style profile before making assets; never silently mix their frame, typography, or review contracts.
+
+- **`book-editorial-bilingual-v2`** — deterministic 3:4 bilingual template with real cover, approved stills, local narration, rendered captions, and optional 9:16 derivative.
+- **`paper-collage-explainer-v1`** — 9:16 editorial paper-collage explainer. Split narration into one 4–8 second concept/visual-metaphor unit at a time; approve the metaphor, still/contact sheet, and generated clip separately. Read [references/paper-collage-explainer.md](references/paper-collage-explainer.md) before selecting this profile.
+
+For `paper-collage-explainer-v1`, choose one generation lane explicitly:
+
+- **Gemini API** — programmatic lane. Requires a user-authorized `GEMINI_API_KEY`, the current Google Gen AI SDK, provider cost/quota approval, and an immutable operation/output record. Use Gemini Omni Flash by default; use Veo 3.1 when first/last-frame control or Veo extension is required.
+- **Google Flow** — manual creative lane. Requires an eligible Google AI subscription and desktop Chromium session. Do not assume Flow exposes a programmable API; download/export only user-authorized outputs and record prompts, credits exposed by the UI, asset hashes, and manual-run provenance.
+
 ## Production sequence
 
 1. **Topic and evidence** — collect public, attributable book metadata. If a WeRead credential or another data source is unavailable, record the limitation and use user-supplied/publicly attributable evidence; do not bypass logins or platform restrictions.
 2. **Script** — create a concise Chinese script plus an English production draft. Keep claims tied to evidence and mark the English version `needs_native_review` until approved.
 3. **Assets** — obtain a real cover with provenance, 12 topic-specific scenes without embedded text, a permitted BGM with attribution, and either a user-authorized narration reference or an explicitly approved synthetic voice design.
 4. **Voice and timing** — generate/record narration only with authorization. Create a timing map with a permitted local ASR tool or an editor transcript; never silently invent timestamps.
-5. **Render** — build a 3:4 local master with centered title treatment, bilingual captions, safe margins, and project-specific music/SFX. Use an original/generated SFX or a user-supplied file with recorded rights; never copy a reference video's audio.
+5. **Render** — build a 3:4 local master with centered title treatment, bilingual captions, safe margins, and project-specific music/SFX. For `paper-collage-explainer-v1`, normalize approved silent 9:16 clips into a separate timeline, then add project-owned narration, captions, BGM, and SFX locally. Use an original/generated SFX or a user-supplied file with recorded rights; never copy a reference video's audio.
 6. **QC and delivery** — run technical checks, verify all release gates, write a manifest and cost events, then optionally import the passed local master into ChatCut for fine editing.
 
 ## Workflow contracts
