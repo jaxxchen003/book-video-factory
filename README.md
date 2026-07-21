@@ -1,6 +1,10 @@
 # Book Video Factory Skill
 
-An installable Codex skill for running a rights-aware, local-first workflow for Chinese book-review short videos. It creates an auditable workspace, guides the human approval gates, and records known run costs. It deliberately ships no book content, covers, music, SFX, voice samples, credentials, or production media.
+[简体中文](README.zh-CN.md) · **English**
+
+An installable Codex skill for running a rights-aware, local-first workflow for Chinese book-review short videos. It supports both a deterministic bilingual editorial layout and a 9:16 editorial paper-collage explainer workflow, while keeping evidence, generation provenance, human approvals, costs, and release decisions auditable.
+
+The repository deliberately ships no reusable book content, covers, music, SFX, voice samples, credentials, or hidden production assets. The videos under `examples/` are maintained showcase derivatives and are not part of the MIT-licensed source package.
 
 ## Install
 
@@ -18,19 +22,59 @@ The Skill is available on the next turn after installation.
 
 ## What it does
 
-- Copies a clean, media-free deterministic factory runtime and warehouse directory contract.
-- Scaffolds idempotent project folders and a bilingual 15-line script template.
-- Checks local planning/render dependencies without assuming macOS paths.
-- Defines rights, source, caption, QC, and ChatCut handoff gates.
-- Writes an append-only run-cost ledger that never invents token values.
-- Derives fail-closed workflow state from immutable manifests and hash-bound approval events.
-- Fits long book titles to a named release profile with measured safe margins and semantic wrapping.
-- Supports `single-book` and `content-system-backed` projects. The latter imports immutable `dbs-content-system` snapshots and validates `source_document / content_unit / claim / assembly_brief` objects.
-- Records an auditable script-line → Claim → content-unit/source plus scene traceability map, backed by one renderer scene contract.
+- Copies a clean, media-free deterministic runtime and warehouse directory contract.
+- Scaffolds idempotent project folders and a bilingual script template.
+- Supports `single-book` and `content-system-backed` evidence packages.
+- Links script lines to Claims, source material, scene contracts, and immutable manifests.
+- Separates technical QC from human reviews for story, visual metaphor, BGM, rights, native-language copy, and publication.
+- Derives fail-closed release state from file hashes and release-scoped approval events.
+- Writes an append-only cost ledger without inventing missing provider usage.
+- Preserves the local master as the source of truth; ChatCut remains an optional fine-edit derivative layer.
+
+## Style profiles
+
+Choose one profile before generating assets. Do not silently mix their aspect ratio, typography, asset, or approval contracts.
+
+| Profile | Output | Best for | Core asset contract |
+| --- | --- | --- | --- |
+| `book-editorial-bilingual-v2` | 3:4 bilingual editorial master, optional 9:16 derivative | Stable cover-led book notes and repeatable channel packaging | Real authorized cover, 12 approved still scenes, local narration, bilingual captions, deterministic FFmpeg render |
+| `paper-collage-explainer-v1` | 9:16 editorial paper-collage explainer | High-information concepts expressed through short visual metaphors | One 4–8 second concept per unit, Gate 1 metaphor approval, Gate 2 still/contact-sheet approval, Gate 3 generated-clip QA, local audio and caption master |
+
+Read the complete [`paper-collage-explainer-v1` workflow](skills/book-video-factory/references/paper-collage-explainer.md) before selecting the new profile.
+
+### Gemini API or Google Flow
+
+The paper-collage profile has two explicit generation lanes. The local factory still owns narration timing, captions, BGM, SFX, QC, manifests, and the final master.
+
+| Lane | Use it when | Dependency and boundary |
+| --- | --- | --- |
+| Gemini API | You need reproducible programmatic generation, operation tracking, or batch processing | User-authorized `GEMINI_API_KEY`, current Google Gen AI SDK, approved quota/cost. Use Gemini Omni Flash by default and Veo 3.1 when first/last-frame control or Veo extension is required. Never write the key to prompts, logs, or manifests. |
+| Google Flow | A human director wants to iterate each shot in Google's creative UI | Eligible Google AI subscription, available credits, desktop Chromium, and user-authorized exports. Flow is treated as a manual UI lane; this Skill does not assume a programmable Flow API. |
+
+For either lane, record the prompt, model or Flow label, input/output hashes, operation or export evidence, exposed cost/credits, reviewer, and scene ID. Generated audio is stripped before the project-owned local mix unless it has a separate explicit approval.
+
+### Core paper-collage workflow
+
+1. Lock attributable evidence and a concise Chinese script.
+2. Split narration into one 4–8 second concept per scene.
+3. Gate 1: approve `concept → visible metaphor → animation action → prohibitions`.
+4. Gate 2: approve the first/last frame or contact sheet.
+5. Gate 3: generate through Gemini API or Google Flow and inspect duration, ratio, watermark, text pollution, motion continuity, and decodability.
+6. Normalize approved clips to silent 9:16 H.264 media.
+7. Build the local timeline from approved narration/ASR timing; add captions, authorized BGM, SFX, and branding locally.
+8. Run technical QC and bind visual, BGM, local-master, rights, and publication decisions to immutable hashes.
 
 ## Example outputs / 示例成片
 
-These are full pipeline outputs, not source material bundled with the Skill. Click a poster to open the browser-based video player, or [open the complete showcase](https://jaxxchen003.github.io/book-video-factory/demos.html).
+These are full-pipeline showcase outputs, not source material bundled with the Skill. Click a poster to open the browser player, or [open the complete showcase](https://jaxxchen003.github.io/book-video-factory/demos.html).
+
+### Featured paper-collage case: 《超越百岁》
+
+[![《超越百岁》纸拼贴讲解视频](examples/posters/chaoyue-baisui-paper-collage.jpg)](https://jaxxchen003.github.io/book-video-factory/demos.html#chaoyue-baisui)
+
+[`paper-collage-explainer-v1` · Play video · 82.7s · 9:16](https://jaxxchen003.github.io/book-video-factory/demos.html#chaoyue-baisui)
+
+This public web preview is derived from the user-approved r5 local master. The source master remains immutable. For the repository showcase, the real cover region at the beginning was replaced and the video was web-compressed; see the [case provenance manifest](examples/manifests/chaoyue-baisui-paper-collage.json). Its inclusion does not license the book, title, translation, music, or any third-party material for reuse.
 
 | 《界限》 | 《不去讨好任何人》 |
 | --- | --- |
@@ -44,32 +88,29 @@ These are full pipeline outputs, not source material bundled with the Skill. Cli
 
 The demo videos are maintained showcase outputs and are **not** licensed under this repository's MIT licence. Book covers, titles, quotations, trademarks, music, and other third-party elements remain the property of their respective rights holders. Verify your rights before reusing or redistributing a demo.
 
-## Recommended toolchain / 各环节推荐工具与能力
+## Recommended toolchain
 
-The Skill is the operating contract and orchestration layer; it does not silently install providers, models, accounts, media, or credentials. Each provider can be replaced if the same inputs, provenance records, quality gates, and release contract are preserved.
+The Skill is the operating contract and orchestration layer; providers remain replaceable when the same inputs, provenance, approval gates, and release contract are preserved.
 
-| Production stage | Recommended tool or capability | What it is used for | Requirement / boundary |
-| --- | --- | --- | --- |
-| Topic discovery / 选题 | Authorized [WeChat Reading Skill](https://github.com/Tencent/WeChatReading), attributable public book metadata, public trend/search data, and Codex research | Build the topic queue, compare angles, collect book facts and evidence | WeRead is optional and credential-gated; never bypass login or platform controls |
-| Evidence and rights / 资料与授权 | Source manifest, URL/file hash, licence/authorization record, and a human approval gate | Keep every cover, quotation, voice reference, BGM and SFX auditable | Required before an asset can enter the approved set |
-| Story and bilingual copy / 脚本与双语文案 | Codex writing/reasoning plus human editorial review; native-level English review when publishing internationally | Hook, 15-line story structure, Chinese captions and matched English captions | AI output is a draft; factual claims, quotations and translation require review |
-| Scene images / 场景图 | Codex image generation using GPT Image, or another approved image provider | Generate 12 distinct, topic-specific, text-free 3:4 scenes | Save prompt, model/provider, generation date and approval state; do not ask the model to fake a real cover |
-| Book cover / 真实书封 | Authorized WeRead/publisher/user-supplied cover plus provenance metadata | Composite the real edition cover into selected scenes | Keep the cover separate from generated art and confirm reuse rights |
-| Narration / 人声 | [OpenBMB VoxCPM2](https://github.com/OpenBMB/VoxCPM) locally, or an authorized human/cloud TTS provider | Produce a stable channel voice and project narration | Lock one approved voice reference; clone only voices with explicit permission |
-| Timing and captions / 对齐与字幕 | [faster-whisper](https://github.com/SYSTRAN/faster-whisper), Whisper-compatible ASR, or an editor transcript | Derive word/segment timing, SRT/ASS and bilingual caption cues | Timing must come from real narration audio; never invent timestamps |
-| BGM and SFX / 音乐与音效 | One project-specific licensed track, user-owned audio, or an authorized music-generation capability; optional ChatCut music generation | Establish mood, intro rhythm and voice ducking | Record creator/provider, licence, source, hash and attribution; never copy reference-video audio |
-| Typography and graphics / 字体与图层 | [Pillow](https://python-pillow.org/) plus the bundled OFL SmileySans fallback or an operator-configured CJK/English font | Render centered titles, bilingual captions, outlines and safe margins | The bundled fallback is replaceable; verify any replacement font licence and keep a local font manifest |
-| Deterministic render / 合成 | [FFmpeg and FFprobe](https://ffmpeg.org/) | 3:4 composition, image motion, transitions, mixing, ducking, encoding and media inspection | Required for the local-render path |
-| Orchestration / 流水线调度 | Codex + this Skill's bootstrap, doctor and quality-gate contracts | Move an approved topic through research, assets, voice, render, QC and delivery | Human gates remain at topic, script, rights and publish approval |
-| Cost ledger / 成本记录 | `scripts/run_cost.py` plus provider telemetry | Append image jobs, voice seconds, render seconds, retries and known Codex token counts | Missing telemetry is recorded as `—`, never guessed as zero |
-| QC / 质检 | FFprobe, release manifests, source checks and human audio/visual review | Validate codec, audio stream, duration, captions, safe areas, provenance and versioning | Local QC must pass before editor handoff or publication |
-| Fine edit / 精修 | Optional ChatCut project | Make scoped rhythm, subtitle, audio and motion adjustments on an editable timeline | Import only after local QC; export a new derivative and never overwrite the local master |
+| Production stage | Recommended tool or capability | Requirement / boundary |
+| --- | --- | --- |
+| Topic and evidence | Authorized WeChat Reading Skill, attributable public metadata, user-supplied sources, Codex research | Never bypass login or platform controls; reader reviews are viewpoints, not factual evidence |
+| Story and bilingual copy | Codex writing/reasoning plus human editorial review | Claims and quotations require source review; English stays `needs_native_review` until approved |
+| Editorial stills | Codex image generation with GPT Image or another approved provider | Save prompt, model, date, hash, and approval; never generate a fake real-world book cover |
+| Paper-collage clips | Gemini API with Gemini Omni Flash/Veo 3.1, or user-operated Google Flow | Requires user authorization, provider cost/credit approval, immutable prompts and operation/export provenance |
+| Narration | Local VoxCPM2, authorized human voice, or approved cloud TTS | Clone only voices with explicit permission and record the authorization |
+| Timing and captions | faster-whisper, Whisper-compatible ASR, or editor transcript | Derive timing from the real narration; never invent timestamps |
+| Book cover | Authorized publisher/retailer/user-supplied cover plus provenance metadata | Keep it separate from generated art and clear reuse rights before public release |
+| BGM and SFX | Licensed, user-owned, or authorized generated audio; optional ChatCut music | Record creator/provider, licence or authorization, source/hash, and attribution |
+| Typography and graphics | Pillow, bundled OFL SmileySans fallback, or an operator-configured font | Verify replacement-font licences and preserve safe areas |
+| Deterministic render | FFmpeg and FFprobe | Required for local composition, normalization, mixing, encoding, and media inspection |
+| QC and release | Release manifests, source checks, technical probes, and human review | Local QC is not publication approval; rights and publish gates remain separate |
 
-Minimum planning only needs Codex and Python 3.11+. A full local render normally needs Python 3.11+, FFmpeg/FFprobe, Pillow, one permitted image capability, one permitted narration path, an ASR timing path, an authorized BGM/SFX source, and enough disk space. Run `doctor.py` to distinguish planning-ready from render-ready.
+Minimum planning needs Codex and Python 3.11+. A full local render normally also needs FFmpeg/FFprobe, Pillow, approved image/video generation, a narration path, ASR timing, authorized audio, and enough disk space. Run `doctor.py` to distinguish planning-ready from render-ready.
 
 ## What you provide
 
-You must provide or explicitly authorize all real-world media and accounts: book sources/covers, narration method or voice reference, BGM/SFX, image generation account, optional WeRead access, optional ChatCut account, and a publishing decision. Review the [first-run guide](skills/book-video-factory/references/first-run.md) before production.
+You must provide or explicitly authorize real-world media and accounts: book sources/covers, narration method or voice reference, BGM/SFX, image/video generation accounts, optional WeRead access, optional Gemini API or Google Flow access, optional ChatCut access, and the final publishing decision. Review the [first-run guide](skills/book-video-factory/references/first-run.md) before production.
 
 ## Bootstrap without Codex
 
@@ -98,11 +139,11 @@ python3 book_video_factory/scripts/content_bridge.py import-package \
   --package /path/to/content-package.json
 ```
 
-The upstream system remains authoritative for audits, content-unit extraction, theme maps, relationships, deduplication, canonical versions, and topic assembly. The video factory only consumes a validated snapshot and never rewrites the upstream system.
+The upstream system remains authoritative for audits, content-unit extraction, relationships, deduplication, canonical versions, and topic assembly. The video factory consumes a validated snapshot and never rewrites the upstream system.
 
 ## Safety and licence boundary
 
-The MIT licence applies only to this repository's code and documentation. It does not grant rights to third-party books, covers, quotations, fonts, music, sound effects, voice recordings, generated assets, platforms, or provider models. Do not use this workflow to bypass platform access controls or to clone a voice without permission.
+The MIT licence applies only to this repository's code and documentation. It does not grant rights to books, covers, quotations, fonts, music, sound effects, voices, generated outputs, platforms, or provider models. Do not bypass platform access controls, expose credentials, imitate a protected brand/program identity, or clone a voice without permission.
 
 ## Development checks
 
@@ -111,4 +152,4 @@ python3 -m unittest discover -s skills/book-video-factory/tests -v
 python3 -m unittest discover -s skills/book-video-factory/runtime/book_video_factory/tests -v
 ```
 
-When the Codex Skill Creator is available, also run its `quick_validate.py` against this repository root.
+When Codex Skill Creator is available, also run its `quick_validate.py` against `skills/book-video-factory`.

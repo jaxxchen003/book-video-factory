@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "case_id": "chaoyue-baisui-paper-collage",
+  "title": "超越百岁：长寿的科学与艺术",
+  "author": "彼得·阿提亚",
+  "style_profile": "paper-collage-explainer-v1",
+  "source_release": {
+    "project_id": "chaoyue-baisui-peter-attia",
+    "release_id": "collage-v1-r5",
+    "delivery_label": "collage-v1-r5-local-approved",
+    "decision_at_source": "approved_for_local_master_only",
+    "source_master_project_relative_path": "10_delivery_交付/collage-v1-r5-local-approved/chaoyue-baisui-peter-attia-collage-v1-r5-local-approved-9x16.mp4",
+    "source_master_sha256": "1996cee1fd0e7cc5e3187810efe38c94d5636e1be3d3953a38bbda35de9ad5c0",
+    "source_duration_seconds": 82.667,
+    "source_video_stream": "H.264 720x1280 30fps",
+    "source_audio_stream": "AAC",
+    "source_qc": {
+      "integrated_loudness_lufs": -14.9,
+      "true_peak_dbfs": -2.8,
+      "blackdetect_events": 0
+    }
+  },
+  "public_showcase_preview": {
+    "path": "examples/videos/chaoyue-baisui-paper-collage.mp4",
+    "sha256": "cda9dc11aa7b7f71897f576a188f2f76e1cded3f8517138aeedf7625cbda6f30",
+    "size_bytes": 5269033,
+    "duration_seconds": 82.7,
+    "video_stream": "H.264 720x1280 30fps",
+    "audio_stream": "AAC 48kHz",
+    "poster_path": "examples/posters/chaoyue-baisui-paper-collage.jpg",
+    "poster_sha256": "28b68258ce140d7b7813d39005f541701dce885119268b1fc21e3cee256c9e2d",
+    "transformations": [
+      "Replaced the real book-cover region during the opening 11.9 seconds with an existing project paper-collage visual patch.",
+      "Transcoded for GitHub Pages playback with H.264/AAC and fast-start metadata.",
+      "Preserved the full narration timeline and overall duration."
+    ]
+  },
+  "showcase_decision": {
+    "scope": "Public repository showcase derivative requested by the user on 2026-07-22.",
+    "does_not_modify_source_master": true,
+    "does_not_change_source_delivery_manifest": true,
+    "reuse_license": "not_granted",
+    "notes": [
+      "The source delivery manifest remains the authoritative record for its original local-master approval.",
+      "English captions remain a production draft and are not represented as native-reviewed translation.",
+      "Book title, quoted ideas, music, trademarks and other third-party elements are outside the repository MIT licence."
+    ]
+  }
+}
