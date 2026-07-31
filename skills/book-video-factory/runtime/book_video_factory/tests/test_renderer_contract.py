@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import copy
 import json
+import os
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,18 +15,16 @@ sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(SRC))
 
 import build_final_video_v2 as renderer  # noqa: E402
+from book_video_factory.fonts import FontConfigurationError  # noqa: E402
 from book_video_factory.scene_contract import V4_SCENE_LINE_CONTRACT  # noqa: E402
 
 
 class RendererPortabilityTests(unittest.TestCase):
-    def test_missing_system_fonts_fall_back_to_bundled_ofl_font(self) -> None:
+    def test_missing_all_fonts_fails_closed(self) -> None:
         style = json.loads((ROOT / "config/video_style_v2.json").read_text(encoding="utf-8"))
-        style = copy.deepcopy(style)
-        style["fonts"]["chinese"] = "/missing/chinese-font.ttf"
-        style["fonts"]["english"] = "/missing/english-font.ttf"
-        expected = ROOT / "resources/fonts/SmileySans-Oblique.otf"
-        self.assertEqual(renderer.resolved_font_path(style, "chinese"), expected)
-        self.assertEqual(renderer.resolved_font_path(style, "english"), expected)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(FontConfigurationError, "No usable title font"):
+                renderer.resolved_font_path(style, "title")
 
     def test_v4_scene_line_contract_matches_renderer_behavior(self) -> None:
         self.assertEqual(V4_SCENE_LINE_CONTRACT["S01"], ("V01", "V02"))

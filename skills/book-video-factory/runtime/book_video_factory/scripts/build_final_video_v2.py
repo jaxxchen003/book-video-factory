@@ -25,6 +25,8 @@ from typing import Any
 import _bootstrap  # noqa: F401
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
 
+from book_video_factory.fonts import resolve_font_path
+
 from book_video_factory.audio import splice_asr_timestamps
 from book_video_factory.scene_contract import V4_SCENE_LINE_CONTRACT, V4_TIMELINE_SCENES
 
@@ -118,15 +120,7 @@ def align_lines(script: dict[str, Any], asr: dict[str, Any], montage_seconds: fl
 
 
 def resolved_font_path(style: dict[str, Any], kind: str) -> Path:
-    fonts = style["fonts"]
-    configured = Path(fonts[kind]).expanduser()
-    path = configured if configured.is_absolute() else FACTORY / configured
-    if path.is_file():
-        return path
-    fallback = FACTORY / fonts["title"]
-    if fallback.is_file():
-        return fallback
-    raise FileNotFoundError(f"Configured {kind} font and bundled fallback are unavailable: {path}")
+    return resolve_font_path(FACTORY, style["fonts"], kind)
 
 
 def font(style: dict[str, Any], kind: str, size: int) -> ImageFont.FreeTypeFont:

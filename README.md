@@ -106,7 +106,7 @@ The Skill is the operating contract and orchestration layer; providers remain re
 | Timing and captions | faster-whisper, Whisper-compatible ASR, or editor transcript | Derive timing from the real narration; never invent timestamps |
 | Book cover | Authorized publisher/retailer/user-supplied cover plus provenance metadata | Keep it separate from generated art and clear reuse rights before public release |
 | BGM and SFX | Licensed, user-owned, or authorized generated audio; optional ChatCut music | Record creator/provider, licence or authorization, source/hash, and attribution |
-| Typography and graphics | Pillow, bundled OFL SmileySans fallback, or an operator-configured font | Verify replacement-font licences and preserve safe areas |
+| Typography and graphics | Pillow plus explicit licensed font paths or approved OS font candidates; fail closed when unavailable | Verify font licences and preserve safe areas; no font binary is bundled |
 | Deterministic render | FFmpeg and FFprobe | Required for local composition, normalization, mixing, encoding, and media inspection |
 | QC and release | Release manifests, source checks, technical probes, and human review | Local QC is not publication approval; rights and publish gates remain separate |
 
