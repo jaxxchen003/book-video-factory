@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://book-video-factory.local/schemas/render-result-v1.schema.json",
+  "title": "Renderer Contract v1 RenderResult",
+  "description": "Write-once result for one renderer execution attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "request_id", "request_hash", "attempt_id", "status",
+    "renderer", "started_at", "finished_at", "output", "sidecars", "media_probe",
+    "warnings", "errors", "primary_error_code", "metrics", "input_hashes",
+    "output_hashes", "qc_handoff", "logs", "extensions"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "request_id": {"type": "string", "minLength": 1},
+    "request_hash": {"$ref": "#/$defs/hash"},
+    "attempt_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["pending", "running", "succeeded", "failed", "blocked", "cancelled"]},
+    "renderer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "capability_document_sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "capability_document_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "started_at": {"type": ["string", "null"]},
+    "finished_at": {"type": ["string", "null"]},
+    "output": {"type": "array", "items": {"$ref": "#/$defs/result_artifact"}},
+    "sidecars": {"type": "array", "items": {"$ref": "#/$defs/result_artifact"}},
+    "media_probe": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sidecar_artifact_id", "duration_ticks", "video", "audio"],
+          "properties": {
+            "sidecar_artifact_id": {"type": "string", "minLength": 1},
+            "duration_ticks": {"type": "integer", "minimum": 1},
+            "video": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["codec", "width", "height", "fps", "pixel_format", "frame_count"],
+              "properties": {
+                "codec": {"type": "string", "minLength": 1},
+                "width": {"type": "integer", "minimum": 1},
+                "height": {"type": "integer", "minimum": 1},
+                "fps": {"$ref": "#/$defs/fps"},
+                "pixel_format": {"type": "string", "minLength": 1},
+                "frame_count": {"type": "integer", "minimum": 1}
+              }
+            },
+            "audio": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["codec", "sample_rate", "channels"],
+              "properties": {
+                "codec": {"type": "string", "minLength": 1},
+                "sample_rate": {"type": "integer", "minimum": 1},
+                "channels": {"type": "integer", "minimum": 1}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "warnings": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "errors": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "primary_error_code": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/error_code"}]},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"},
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"}
+    },
+    "input_hashes": {"$ref": "#/$defs/hash_index"},
+    "output_hashes": {"$ref": "#/$defs/hash_index"},
+    "qc_handoff": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["release_id", "request_hash", "attempt_id", "output_asset_ids", "output_spec_snapshot", "media_probe_artifact_id", "renderer_checks", "expected_post_qc_profile_id", "rights_snapshot_sha256", "approval_snapshot_sha256"],
+          "properties": {
+            "release_id": {"type": "string", "minLength": 1},
+            "request_hash": {"$ref": "#/$defs/hash"},
+            "attempt_id": {"type": "string", "minLength": 1},
+            "output_asset_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "output_spec_snapshot": {"type": "object", "additionalProperties": true},
+            "media_probe_artifact_id": {"type": "string", "minLength": 1},
+            "renderer_checks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "result", "severity"],
+                "properties": {
+                  "id": {"type": "string", "minLength": 1},
+                  "result": {"enum": ["pass", "fail", "warning"]},
+                  "severity": {"enum": ["error", "warning", "info"]}
+                }
+              }
+            },
+            "expected_post_qc_profile_id": {"type": "string", "minLength": 1},
+            "rights_snapshot_sha256": {"$ref": "#/$defs/hash"},
+            "approval_snapshot_sha256": {"$ref": "#/$defs/hash"}
+          }
+        }
+      ]
+    },
+    "logs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "ref"],
+        "properties": {
+          "role": {"type": "string", "minLength": 1},
+          "ref": {"$ref": "#/$defs/portable_ref"}
+        }
+      }
+    },
+    "extensions": {"$ref": "#/$defs/extensions"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "fps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator"],
+      "properties": {
+        "numerator": {"type": "integer", "minimum": 1},
+        "denominator": {"type": "integer", "minimum": 1}
+      }
+    },
+    "portable_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "path"],
+      "properties": {
+        "root": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1}
+      }
+    },
+    "result_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "role", "ref", "bytes", "sha256", "media_type"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "role": {"type": "string", "minLength": 1},
+        "ref": {"$ref": "#/$defs/portable_ref"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/hash"},
+        "media_type": {"type": "string", "minLength": 1}
+      }
+    },
+    "error_code": {
+      "enum": ["RENDER_INPUT_INVALID", "RENDER_ASSET_MISSING", "RENDER_HASH_MISMATCH", "RENDER_CAPABILITY_UNSUPPORTED", "RENDER_GATE_BLOCKED", "RENDER_RIGHTS_BLOCKED", "RENDER_TIMELINE_INVALID", "RENDER_AUDIO_INVALID", "RENDER_CAPTION_INVALID", "RENDER_FONT_UNAVAILABLE", "RENDER_PROCESS_FAILED", "RENDER_OUTPUT_MISSING", "RENDER_PROBE_FAILED", "RENDER_CANCELLED"]
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1},
+        "field": {"type": "string"},
+        "details": {"type": "object", "additionalProperties": true},
+        "stage": {"type": "string"},
+        "retryable": {"type": "boolean"},
+        "asset_id": {"type": "string"},
+        "log_ref": {"$ref": "#/$defs/portable_ref"}
+      }
+    },
+    "hash_index": {
+      "type": "object",
+      "propertyNames": {"minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/hash"}
+    },
+    "extension_value": {
+      "type": "object",
+      "required": ["schema_version"],
+      "additionalProperties": true,
+      "properties": {"schema_version": {"type": "string", "minLength": 1}}
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"},
+      "additionalProperties": {"$ref": "#/$defs/extension_value"}
+    }
+  }
+}
