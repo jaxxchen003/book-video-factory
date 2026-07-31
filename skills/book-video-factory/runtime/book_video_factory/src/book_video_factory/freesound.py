@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -10,6 +9,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from .credentials import (
+    credential_available as shared_credential_available,
+    load_secret as load_shared_secret,
+)
 from .project import write_json
 from .weread import trusted_ssl_context
 
@@ -29,18 +32,9 @@ def utc_now() -> str:
 
 
 def load_secret(env_name: str, keychain_service: str) -> str:
-    value = os.environ.get(env_name, "").strip()
+    value = load_shared_secret(env_name, keychain_service)
     if value:
         return value
-    if os.uname().sysname == "Darwin":
-        completed = subprocess.run(
-            ["security", "find-generic-password", "-s", keychain_service, "-w"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if completed.returncode == 0 and completed.stdout.strip():
-            return completed.stdout.strip()
     raise FreesoundError(
         f"Freesound credential not found in {env_name} or macOS Keychain"
     )
@@ -51,17 +45,7 @@ def load_api_key() -> str:
 
 
 def credential_available(env_name: str, keychain_service: str) -> bool:
-    if os.environ.get(env_name, "").strip():
-        return True
-    if os.uname().sysname != "Darwin":
-        return False
-    completed = subprocess.run(
-        ["security", "find-generic-password", "-s", keychain_service],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-    return completed.returncode == 0
+    return shared_credential_available(env_name, keychain_service)
 
 
 def commercial_api_authorized() -> bool:
