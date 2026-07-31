@@ -1,8 +1,4 @@
-"""Renderer Contract v1 infrastructure.
-
-This package intentionally contains no renderer, V4 mapper, provider access or
-media execution code.
-"""
+"""Renderer Contract v1 infrastructure and the bounded legacy V4 facade."""
 
 from .canonical import (
     CanonicalizationError,
@@ -38,6 +34,13 @@ from .models import (
     RenderResult,
 )
 from .paths import PortablePathError, RootResolver, normalize_portable_path
+from .persistence import (
+    ContractPersistenceError,
+    write_attempt_event,
+    write_canonical_once,
+    write_render_request,
+    write_render_result,
+)
 from .release_snapshot import (
     create_release_snapshot,
     snapshot_filename,
@@ -67,6 +70,22 @@ from .validation import (
     validate_request_hash,
     validate_snapshot_hash,
 )
+from .v4_compat import (
+    LEGACY_EXTENSION,
+    LEGACY_RENDERER_ID,
+    LEGACY_RENDERER_VERSION,
+    PRE_RENDER_GATES,
+    V4CompatibilityBundle,
+    collect_v4_release,
+    map_v4_snapshot_to_request,
+)
+from .legacy_v4_renderer import (
+    CommandResult,
+    FFprobeMediaProbe,
+    LegacyV4Renderer,
+    RenderExecutionContext,
+    SubprocessCommandRunner,
+)
 
 __all__ = [
     "ArtifactBinding",
@@ -74,6 +93,13 @@ __all__ = [
     "CaptionTimingLevel",
     "CapabilityDefinition",
     "ContractValidationError",
+    "ContractPersistenceError",
+    "CommandResult",
+    "FFprobeMediaProbe",
+    "LEGACY_EXTENSION",
+    "LEGACY_RENDERER_ID",
+    "LEGACY_RENDERER_VERSION",
+    "LegacyV4Renderer",
     "PathRootKind",
     "PortablePathError",
     "PortableRef",
@@ -82,6 +108,7 @@ __all__ = [
     "ReleaseBinding",
     "ReleaseSnapshot",
     "RenderIssue",
+    "RenderExecutionContext",
     "RenderMode",
     "RenderRequest",
     "RenderResult",
@@ -92,6 +119,7 @@ __all__ = [
     "RenderStatus",
     "RootResolver",
     "SnapshotWriteError",
+    "SubprocessCommandRunner",
     "TimelineAssetKind",
     "canonical_json_bytes",
     "canonical_json_text",
@@ -99,8 +127,11 @@ __all__ = [
     "capabilities_from_dict",
     "capabilities_to_dict",
     "compare_capabilities",
+    "collect_v4_release",
     "create_release_snapshot",
     "normalize_portable_path",
+    "map_v4_snapshot_to_request",
+    "PRE_RENDER_GATES",
     "release_snapshot_from_dict",
     "release_snapshot_to_dict",
     "render_request_from_dict",
@@ -123,5 +154,10 @@ __all__ = [
     "validate_request_capabilities",
     "validate_request_hash",
     "validate_snapshot_hash",
+    "V4CompatibilityBundle",
+    "write_attempt_event",
+    "write_canonical_once",
     "write_release_snapshot",
+    "write_render_request",
+    "write_render_result",
 ]
