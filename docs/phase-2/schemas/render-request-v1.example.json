@@ -1,0 +1,456 @@
+{
+  "schema_version": "1.0",
+  "request_id": "render-request-001",
+  "request_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "project": {
+    "id": "example-project",
+    "manifest_ref": {
+      "root": "project",
+      "path": "project.json"
+    },
+    "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "release": {
+    "id": "release-001",
+    "manifest_id": "release-manifest-001",
+    "manifest_version": "1.0",
+    "manifest_ref": {
+      "root": "project",
+      "path": "manifests/releases/release-001.json"
+    },
+    "manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "render_mode": "final",
+  "renderer": {
+    "id": "renderer.example.v1",
+    "version": "1.0.0",
+    "capability_document_ref": {
+      "root": "runtime",
+      "path": "config/renderers/renderer-example-v1.capabilities.json"
+    },
+    "capability_document_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "required_capabilities": [
+      "still_images",
+      "layered_images",
+      "captions",
+      "word_highlight",
+      "camera_motion",
+      "audio_playback",
+      "transitions",
+      "deterministic_render"
+    ]
+  },
+  "profile": {
+    "id": "example-vertical-profile",
+    "revision": 1,
+    "ref": {
+      "root": "runtime",
+      "path": "config/release_profiles/example-vertical-profile.json"
+    },
+    "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "roots": {
+    "project": {
+      "kind": "project",
+      "input_access": "read_only",
+      "output_access": "request_targets_only"
+    },
+    "runtime": {
+      "kind": "runtime",
+      "input_access": "read_only",
+      "output_access": "none"
+    }
+  },
+  "output_spec": {
+    "width": 720,
+    "height": 960,
+    "fps": {
+      "numerator": 30,
+      "denominator": 1
+    },
+    "pixel_format": "yuv420p",
+    "container": "mp4",
+    "video": {
+      "codec": "h264",
+      "encoding_policy": "profile_default"
+    },
+    "audio": {
+      "codec": "aac",
+      "sample_rate": 48000,
+      "channels": 2
+    },
+    "duration_ticks": 12000,
+    "artifact_role": "local_master"
+  },
+  "output": {
+    "artifact_id": "local-master",
+    "role": "local_master",
+    "target": {
+      "root": "project",
+      "path": "08_render_合成/final/release-001/local-master.mp4"
+    },
+    "overwrite_policy": "fail_if_exists"
+  },
+  "timeline": {
+    "model": "narration_segments_v1",
+    "timebase": {
+      "ticks_per_second": 1000
+    },
+    "frame_rounding": "integer_round_half_up_v1",
+    "duration_ticks": 12000,
+    "segments": [
+      {
+        "segment_id": "segment-001",
+        "start_tick": 0,
+        "end_tick": 6000,
+        "narration": {
+          "cue_ids": [
+            "narration-001"
+          ]
+        },
+        "visual": {
+          "kind": "still",
+          "asset_ids": [
+            "scene-001"
+          ],
+          "motion": "slow_push"
+        },
+        "caption_cue_ids": [
+          "caption-zh-001"
+        ],
+        "overlay_ids": [
+          "safe-title-001"
+        ],
+        "transition": {
+          "in": "cut",
+          "out": "crossfade_short"
+        },
+        "metadata": {
+          "script_line_ids": [
+            "L01"
+          ],
+          "scene_ids": [
+            "SC01"
+          ]
+        }
+      },
+      {
+        "segment_id": "segment-002",
+        "start_tick": 6000,
+        "end_tick": 10000,
+        "narration": {
+          "cue_ids": [
+            "narration-002"
+          ]
+        },
+        "visual": {
+          "kind": "still",
+          "asset_ids": [
+            "scene-002"
+          ],
+          "motion": "hold"
+        },
+        "caption_cue_ids": [
+          "caption-zh-002"
+        ],
+        "overlay_ids": [],
+        "transition": {
+          "in": "crossfade_short",
+          "out": "cut"
+        },
+        "metadata": {
+          "script_line_ids": [
+            "L02"
+          ],
+          "scene_ids": [
+            "SC02"
+          ]
+        }
+      },
+      {
+        "segment_id": "segment-outro",
+        "start_tick": 10000,
+        "end_tick": 12000,
+        "narration": null,
+        "visual": {
+          "kind": "hold",
+          "asset_ids": [],
+          "motion": "none"
+        },
+        "caption_cue_ids": [],
+        "overlay_ids": [],
+        "transition": {
+          "in": "cut",
+          "out": "cut"
+        },
+        "metadata": {
+          "script_line_ids": [],
+          "scene_ids": []
+        }
+      }
+    ]
+  },
+  "audio": {
+    "manifest_ref": {
+      "root": "project",
+      "path": "manifests/audio/release-001.json"
+    },
+    "manifest_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "final_mix_asset_id": "final-mix",
+    "stem_asset_ids": [
+      "narration-stem"
+    ],
+    "stem_usage": "visual_analysis_only",
+    "cues": [
+      {
+        "cue_id": "narration-001",
+        "asset_id": "narration-stem",
+        "start_tick": 0,
+        "end_tick": 6000
+      },
+      {
+        "cue_id": "narration-002",
+        "asset_id": "narration-stem",
+        "start_tick": 6000,
+        "end_tick": 10000
+      }
+    ],
+    "sync_policy": "timeline_zero_locked",
+    "mix_policy_id": "audio-mix-policy-001"
+  },
+  "captions": {
+    "tracks": [
+      {
+        "track_id": "captions-zh",
+        "language": "zh-CN",
+        "text_source_asset_id": "approved-script",
+        "timing_source_asset_id": "caption-timing",
+        "alignment_revision": 1,
+        "cues": [
+          {
+            "cue_id": "caption-zh-001",
+            "segment_id": "segment-001",
+            "start_tick": 500,
+            "end_tick": 5500,
+            "text": "示例文本一",
+            "granularity": "phrase",
+            "words": [
+              {
+                "word_id": "word-001",
+                "text": "示例",
+                "start_tick": 500,
+                "end_tick": 2200
+              },
+              {
+                "word_id": "word-002",
+                "text": "文本一",
+                "start_tick": 2200,
+                "end_tick": 5500
+              }
+            ],
+            "highlight": {
+              "mode": "word",
+              "states": [
+                "inactive",
+                "active"
+              ]
+            }
+          },
+          {
+            "cue_id": "caption-zh-002",
+            "segment_id": "segment-002",
+            "start_tick": 6200,
+            "end_tick": 9500,
+            "text": "示例文本二",
+            "granularity": "sentence",
+            "words": [],
+            "highlight": null
+          }
+        ],
+        "style": {
+          "font_role": "caption-cjk",
+          "font_asset_id": "caption-font",
+          "safe_area": {
+            "left_px": 48,
+            "right_px": 48,
+            "bottom_px": 96
+          },
+          "max_lines": 2,
+          "line_break_policy": "semantic_then_measure",
+          "overflow_policy": "fail",
+          "highlight_tokens": {
+            "inactive": "caption.default",
+            "active": "caption.active"
+          }
+        }
+      }
+    ]
+  },
+  "assets": [
+    {
+      "asset_id": "approved-script",
+      "role": "approved_script",
+      "ref": {
+        "root": "project",
+        "path": "02_story_script_故事脚本/script.approved.json"
+      },
+      "bytes": 2048,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "media_type": "application/json",
+      "source_manifest_artifact_id": "release-artifact-script",
+      "rights_ref": "rights-script"
+    },
+    {
+      "asset_id": "caption-timing",
+      "role": "caption_timing",
+      "ref": {
+        "root": "project",
+        "path": "07_timeline_时间线/release-001/caption-timing.json"
+      },
+      "bytes": 4096,
+      "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "media_type": "application/json",
+      "source_manifest_artifact_id": "release-artifact-caption-timing",
+      "rights_ref": "rights-script"
+    },
+    {
+      "asset_id": "scene-001",
+      "role": "scene_visual",
+      "ref": {
+        "root": "project",
+        "path": "03_images_生成图片/approved/release-001/scene-001.png"
+      },
+      "bytes": 120000,
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "media_type": "image/png",
+      "source_manifest_artifact_id": "release-artifact-scene-001",
+      "rights_ref": "rights-visuals"
+    },
+    {
+      "asset_id": "scene-002",
+      "role": "scene_visual",
+      "ref": {
+        "root": "project",
+        "path": "03_images_生成图片/approved/release-001/scene-002.png"
+      },
+      "bytes": 125000,
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "media_type": "image/png",
+      "source_manifest_artifact_id": "release-artifact-scene-002",
+      "rights_ref": "rights-visuals"
+    },
+    {
+      "asset_id": "final-mix",
+      "role": "final_audio_mix",
+      "ref": {
+        "root": "project",
+        "path": "06_music_音乐/release-001/final-mix.wav"
+      },
+      "bytes": 2304000,
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "media_type": "audio/wav",
+      "source_manifest_artifact_id": "release-artifact-final-mix",
+      "rights_ref": "rights-audio"
+    },
+    {
+      "asset_id": "narration-stem",
+      "role": "narration_stem",
+      "ref": {
+        "root": "project",
+        "path": "05_voice_人声/release-001/narration.wav"
+      },
+      "bytes": 1920000,
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "media_type": "audio/wav",
+      "source_manifest_artifact_id": "release-artifact-narration",
+      "rights_ref": "rights-voice"
+    },
+    {
+      "asset_id": "caption-font",
+      "role": "font_caption_cjk",
+      "ref": {
+        "root": "project",
+        "path": "resources/fonts/approved-caption-font.ttf"
+      },
+      "bytes": 800000,
+      "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "media_type": "font/ttf",
+      "source_manifest_artifact_id": "release-artifact-caption-font",
+      "rights_ref": "rights-font"
+    },
+    {
+      "asset_id": "title-font",
+      "role": "font_title_cjk",
+      "ref": {
+        "root": "project",
+        "path": "resources/fonts/approved-title-font.ttf"
+      },
+      "bytes": 810000,
+      "sha256": "5757575757575757575757575757575757575757575757575757575757575757",
+      "media_type": "font/ttf",
+      "source_manifest_artifact_id": "release-artifact-title-font",
+      "rights_ref": "rights-font"
+    }
+  ],
+  "overlays": [
+    {
+      "overlay_id": "safe-title-001",
+      "kind": "title",
+      "start_tick": 0,
+      "end_tick": 6000,
+      "content": {
+        "text": "示例标题",
+        "font_role": "title-cjk",
+        "font_asset_id": "title-font",
+        "layout_token": "title.safe.primary"
+      },
+      "overflow_policy": "fail"
+    }
+  ],
+  "rights": {
+    "policy_version": "1.0",
+    "snapshot_ref": {
+      "root": "project",
+      "path": "manifests/releases/release-001.rights.json"
+    },
+    "snapshot_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+    "status": "allowed",
+    "scope": "final"
+  },
+  "approvals": {
+    "required_gate_ids": [
+      "script",
+      "timing",
+      "voice_rights",
+      "visual_rights",
+      "audio_rights"
+    ],
+    "satisfied_event_ids": [
+      "approval-script-001",
+      "approval-timing-001",
+      "approval-voice-001",
+      "approval-visual-001",
+      "approval-audio-001"
+    ],
+    "snapshot_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+  },
+  "determinism": {
+    "canonicalization": "canonical-json-v1",
+    "timeline_rounding": "integer_round_half_up_v1",
+    "random_seed": 20260731,
+    "locale": "zh-CN",
+    "timezone": "UTC",
+    "required_level": "semantic"
+  },
+  "metadata": {
+    "created_at": "2026-07-31T12:00:00Z",
+    "created_by": "example-orchestrator",
+    "notes": "Portable contract example only."
+  },
+  "extensions": {
+    "org.book-video-factory.example": {
+      "schema_version": "1.0",
+      "quality_tier": "standard"
+    }
+  }
+}

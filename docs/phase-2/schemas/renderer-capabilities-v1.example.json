@@ -1,0 +1,154 @@
+{
+  "schema_version": "1.0",
+  "renderer": {
+    "id": "renderer.example.v1",
+    "version": "1.0.0"
+  },
+  "supported_contract_versions": [
+    "1.0"
+  ],
+  "determinism": {
+    "level": "semantic",
+    "requires_seed": true,
+    "notes": "Stream specification and timeline semantics are reproducible; byte identity is not claimed."
+  },
+  "constraints": {
+    "max_width": 2160,
+    "max_height": 3840,
+    "max_fps": 60,
+    "portable_paths_required": true
+  },
+  "capabilities": {
+    "still_images": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "media_types": [
+          "image/png",
+          "image/jpeg"
+        ]
+      },
+      "determinism": "deterministic"
+    },
+    "layered_images": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "alpha": true
+      },
+      "determinism": "deterministic"
+    },
+    "video_clips": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "captions": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "timing_granularity": [
+          "phrase",
+          "sentence",
+          "word"
+        ],
+        "max_lines": 3
+      },
+      "determinism": "deterministic"
+    },
+    "word_highlight": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "states": [
+          "inactive",
+          "active"
+        ]
+      },
+      "determinism": "deterministic"
+    },
+    "camera_motion": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "motions": [
+          "none",
+          "hold",
+          "slow_push"
+        ]
+      },
+      "determinism": "deterministic"
+    },
+    "vector_overlays": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "audio_playback": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "source": "final_mix_only",
+        "sample_rates": [
+          48000
+        ]
+      },
+      "determinism": "deterministic"
+    },
+    "audio_mixing": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "waveform": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "source_roles": [
+          "final_audio_mix",
+          "narration_stem"
+        ]
+      },
+      "determinism": "deterministic"
+    },
+    "transitions": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "transition_ids": [
+          "cut",
+          "crossfade_short"
+        ]
+      },
+      "determinism": "deterministic"
+    },
+    "preview": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "requires_profile_preview_policy": true
+      },
+      "determinism": "deterministic"
+    },
+    "deterministic_render": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {
+        "levels": [
+          "semantic"
+        ]
+      },
+      "determinism": "seeded"
+    }
+  },
+  "supported_extensions": {
+    "org.book-video-factory.example": {
+      "schema_versions": [
+        "1.0"
+      ]
+    }
+  }
+}
