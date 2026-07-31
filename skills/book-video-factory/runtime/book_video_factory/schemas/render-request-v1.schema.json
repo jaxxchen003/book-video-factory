@@ -132,9 +132,14 @@
       "properties": {
         "manifest_ref": {"$ref": "#/$defs/portable_ref"},
         "manifest_sha256": {"$ref": "#/$defs/hash"},
-        "final_mix_asset_id": {"type": "string", "minLength": 1},
+        "final_mix_asset_id": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
         "stem_asset_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "stem_usage": {"enum": ["none", "visual_analysis_only", "qc_only"]},
+        "stem_usage": {"enum": ["none", "visual_analysis_only", "qc_only", "legacy_audio_mixing"]},
         "cues": {
           "type": "array",
           "items": {
@@ -209,6 +214,38 @@
     },
     "extensions": {"$ref": "#/$defs/extensions"}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "audio": {
+            "properties": {"final_mix_asset_id": {"type": "null"}},
+            "required": ["final_mix_asset_id"]
+          }
+        },
+        "required": ["audio"]
+      },
+      "then": {
+        "properties": {
+          "renderer": {
+            "properties": {
+              "id": {"const": "org.book-video-factory.legacy-v4"},
+              "required_capabilities": {"contains": {"const": "audio_mixing"}}
+            }
+          },
+          "audio": {
+            "properties": {
+              "stem_asset_ids": {"minItems": 3},
+              "stem_usage": {"const": "legacy_audio_mixing"}
+            }
+          },
+          "extensions": {
+            "required": ["org.book-video-factory.legacy-v4"]
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "portable_ref": {

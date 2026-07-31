@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "renderer": {
+    "id": "org.book-video-factory.legacy-v4",
+    "version": "1.0.0"
+  },
+  "supported_contract_versions": ["1.0"],
+  "determinism": {
+    "level": "semantic",
+    "requires_seed": false,
+    "notes": "Facade preserves the locked V4 FFmpeg/Pillow chain and binds its runtime sources; cross-platform H.264 bytes are not claimed bitwise-identical."
+  },
+  "constraints": {
+    "max_width": 720,
+    "max_height": 960,
+    "max_fps": 30,
+    "portable_paths_required": true
+  },
+  "capabilities": {
+    "still_images": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"formats": ["png"], "scene_count": 12},
+      "determinism": "deterministic"
+    },
+    "layered_images": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"uses_real_cover_composite": true},
+      "determinism": "deterministic"
+    },
+    "video_clips": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "captions": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"languages": ["zh-CN", "en"], "line_count": 15},
+      "determinism": "deterministic"
+    },
+    "word_highlight": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "camera_motion": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"motion_ids": ["legacy_zoompan_v1", "legacy_topic_cards_v1", "legacy_cover_composite_v1"]},
+      "determinism": "deterministic"
+    },
+    "vector_overlays": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "audio_playback": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"sample_rate": 48000, "channels": 2},
+      "determinism": "deterministic"
+    },
+    "audio_mixing": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"compatibility_only": true, "required_stem_roles": ["narration_stem", "bgm_stem", "sfx_stem"]},
+      "determinism": "deterministic"
+    },
+    "waveform": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "transitions": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"transition_ids": ["cut"]},
+      "determinism": "deterministic"
+    },
+    "preview": {
+      "supported": false,
+      "version": "1.0",
+      "constraints": {},
+      "determinism": "deterministic"
+    },
+    "deterministic_render": {
+      "supported": true,
+      "version": "1.0",
+      "constraints": {"level": "semantic"},
+      "determinism": "deterministic"
+    }
+  },
+  "supported_extensions": {
+    "org.book-video-factory.legacy-v4": {
+      "schema_versions": ["1.0"]
+    }
+  }
+}

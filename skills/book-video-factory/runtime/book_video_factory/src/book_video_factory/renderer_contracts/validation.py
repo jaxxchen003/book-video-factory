@@ -535,7 +535,72 @@ def _timeline_issues(request: RenderRequest, asset_ids: set[str]) -> list[Render
 def _audio_issues(request: RenderRequest, assets: Mapping[str, ArtifactBinding]) -> list[RenderIssue]:
     issues: list[RenderIssue] = []
     final_mix_id = request.audio.get("final_mix_asset_id")
-    if not isinstance(final_mix_id, str) or final_mix_id not in assets:
+    legacy_namespace = "org.book-video-factory.legacy-v4"
+    legacy_extension = request.extensions.get(legacy_namespace)
+    legacy_audio_exception = (
+        final_mix_id is None
+        and request.renderer.id == legacy_namespace
+        and RendererCapability.AUDIO_MIXING.value
+        in request.renderer.required_capabilities
+        and request.audio.get("stem_usage") == "legacy_audio_mixing"
+        and isinstance(legacy_extension, Mapping)
+        and legacy_extension.get("schema_version") == "1.0"
+    )
+    if legacy_audio_exception:
+        stem_ids = request.audio.get("stem_asset_ids")
+        if not isinstance(stem_ids, tuple) or len(stem_ids) < 3:
+            issues.append(_issue(RendererErrorCode.RENDER_AUDIO_INVALID, "Legacy V4 audio mixing requires at least three bound stems.", "$.audio.stem_asset_ids"))
+        else:
+            stem_roles = {
+                assets[asset_id].role
+                for asset_id in stem_ids
+                if asset_id in assets
+            }
+            required_roles = {"narration_stem", "bgm_stem", "sfx_stem"}
+            if not required_roles.issubset(stem_roles):
+                issues.append(_issue(RendererErrorCode.RENDER_AUDIO_INVALID, "Legacy V4 audio mixing requires narration, BGM and SFX stem roles.", "$.audio.stem_asset_ids"))
+        mix = legacy_extension.get("audio_mix")
+        required_mix_fields = {
+            "narration_asset_id",
+            "bgm_asset_id",
+            "sfx_asset_id",
+            "bgm_start_offset_ticks",
+            "bgm_target_millilufs",
+            "body_duck_millidecibels",
+            "montage_boost_millidecibels",
+            "final_target_millilufs",
+            "true_peak_millidecibels",
+            "approval_event_ids",
+        }
+        if not isinstance(mix, Mapping) or not required_mix_fields.issubset(mix):
+            issues.append(_issue(RendererErrorCode.RENDER_AUDIO_INVALID, "Legacy V4 extension requires a complete audio_mix snapshot.", f"$.extensions.{legacy_namespace}.audio_mix"))
+        else:
+            mix_asset_ids = {
+                mix.get("narration_asset_id"),
+                mix.get("bgm_asset_id"),
+                mix.get("sfx_asset_id"),
+            }
+            if not isinstance(stem_ids, tuple) or mix_asset_ids != set(stem_ids):
+                issues.append(_issue(RendererErrorCode.RENDER_AUDIO_INVALID, "Legacy V4 audio_mix asset IDs must exactly match the bound stems.", f"$.extensions.{legacy_namespace}.audio_mix"))
+            integer_fields = required_mix_fields - {
+                "narration_asset_id",
+                "bgm_asset_id",
+                "sfx_asset_id",
+                "approval_event_ids",
+            }
+            if any(
+                not isinstance(mix.get(field), int)
+                or isinstance(mix.get(field), bool)
+                for field in integer_fields
+            ):
+                issues.append(_issue(RendererErrorCode.RENDER_AUDIO_INVALID, "Legacy V4 audio_mix parameters must use integer units.", f"$.extensions.{legacy_namespace}.audio_mix"))
+            approval_ids = mix.get("approval_event_ids")
+            satisfied_ids = request.approvals.get("satisfied_event_ids")
+            if not isinstance(approval_ids, tuple) or not approval_ids:
+                issues.append(_issue(RendererErrorCode.RENDER_GATE_BLOCKED, "Legacy V4 audio mixing must bind approval event IDs.", f"$.extensions.{legacy_namespace}.audio_mix.approval_event_ids", stage="preflight"))
+            elif not isinstance(satisfied_ids, tuple) or not set(approval_ids).issubset(satisfied_ids):
+                issues.append(_issue(RendererErrorCode.RENDER_GATE_BLOCKED, "Legacy V4 audio approvals must be satisfied by this Request.", f"$.extensions.{legacy_namespace}.audio_mix.approval_event_ids", stage="preflight"))
+    elif not isinstance(final_mix_id, str) or final_mix_id not in assets:
         issues.append(_issue(RendererErrorCode.RENDER_AUDIO_INVALID, "Audio requires an existing final mix asset.", "$.audio.final_mix_asset_id"))
     elif assets[final_mix_id].role != "final_audio_mix":
         issues.append(_issue(RendererErrorCode.RENDER_AUDIO_INVALID, "final_mix_asset_id must reference role final_audio_mix.", "$.audio.final_mix_asset_id"))
