@@ -4,8 +4,8 @@
 
 Implementation and tests: **PASS**.
 
-Git delivery status at report creation: **pending final logical commits and push**. This line must be
-updated after the branch is pushed; until then Phase 3B is not authorized.
+Git delivery status: **complete**. The implementation, tests, and reports were committed as separate
+logical changes and pushed to `origin/feat/renderer-contract-core-v1`.
 
 ## Acceptance checklist
 
@@ -29,7 +29,7 @@ updated after the branch is pushed; until then Phase 3B is not authorized.
 - [x] Final 142/142, 0 Failure, 0 Error, 0 Skip
 - [x] Schema Runtime limitation explicitly documented
 - [x] No absolute production path, credential, or production asset is persisted in code/Schema fixtures
-- [ ] Code and reports pushed; final worktree clean
+- [x] Code and reports pushed; final worktree clean
 
 ## Key decisions
 
@@ -44,8 +44,8 @@ updated after the branch is pushed; until then Phase 3B is not authorized.
 
 ## Phase 3B authorization
 
-Not yet. Authorization becomes **yes** only after Git delivery is complete, remote/local commits
-match, and the final worktree is clean.
+**Yes.** Phase 3A implementation and delivery gates are satisfied. Phase 3B may begin only within
+the scope and prerequisites recorded in `PHASE_3B_PREREQUISITES.md`.
 
 ## Reports
 
