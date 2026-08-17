@@ -6,7 +6,6 @@ import importlib.util
 import json
 import os
 import shutil
-import subprocess
 from pathlib import Path
 
 import _bootstrap  # noqa: F401
@@ -17,6 +16,7 @@ from book_video_factory.freesound import (
     credential_available as freesound_credential_available,
 )
 from book_video_factory.contracts import ContractError, ReleaseProfile
+from book_video_factory.credentials import credential_available
 from book_video_factory.gates import evaluate_workflow_state
 from book_video_factory.style_profiles import StyleProfileError, project_workflow
 
@@ -40,20 +40,6 @@ def python_module_check(name: str, *, required: bool) -> dict[str, object]:
         "status": "ready" if available else ("blocked" if required else "warn"),
         "path": "installed" if available else "missing",
     }
-
-
-def credential_available(env_name: str, keychain_service: str) -> bool:
-    if os.environ.get(env_name, "").strip():
-        return True
-    if os.uname().sysname != "Darwin" or not shutil.which("security"):
-        return False
-    result = subprocess.run(
-        ["security", "find-generic-password", "-s", keychain_service],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-    return result.returncode == 0
 
 
 def main() -> int:
