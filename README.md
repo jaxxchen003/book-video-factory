@@ -169,4 +169,6 @@ python3 -m unittest discover -s skills/book-video-factory/runtime/book_video_fac
 
 When Codex Skill Creator is available, also run its `quick_validate.py` against `skills/book-video-factory`.
 
+<img width="1832" height="1404" alt="star-history-2026817_副本" src="https://github.com/user-attachments/assets/8d0fd3a6-ec17-4ae0-83cf-bff61d688094" />
+
 [https://www.star-history.com/?repos=jaxxchen003%2Fbook-video-factory&type=date&legend=top-left](https://www.star-history.com/?repos=jaxxchen003%2Fbook-video-factory&type=date&legend=top-left)
