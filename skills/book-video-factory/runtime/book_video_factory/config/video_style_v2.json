@@ -6,13 +6,25 @@
     "international": {"width": 1080, "height": 1920, "fps": 30}
   },
   "fonts": {
-    "title": "resources/fonts/SmileySans-Oblique.otf",
-    "title_license": "resources/fonts/SmileySans-OFL.txt",
-    "chinese": "/System/Library/Fonts/Supplemental/Songti.ttc",
+    "title": "",
+    "title_license": "",
+    "chinese": "",
     "chinese_title_index": 0,
-    "chinese_body_index": 1,
-    "english": "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
-    "portability_note": "Songti SC and Times New Roman are preferred macOS fonts. On other systems the renderer falls back to the bundled OFL SmileySans font until the operator configures licensed CJK and English fonts."
+    "chinese_body_index": 0,
+    "english": "",
+    "environment": {
+      "title": "BOOK_VIDEO_TITLE_FONT",
+      "chinese": "BOOK_VIDEO_CHINESE_FONT",
+      "english": "BOOK_VIDEO_ENGLISH_FONT",
+      "search_dirs": "BOOK_VIDEO_FONT_DIRS"
+    },
+    "system_candidates": {
+      "title": ["msyhbd.ttc", "msyh.ttc"],
+      "chinese": ["msyh.ttc", "simsun.ttc"],
+      "english": ["arial.ttf", "times.ttf"]
+    },
+    "bundled_fallback": "",
+    "portability_note": "Use an explicit licensed font path through BOOK_VIDEO_*_FONT or profile configuration. Windows may use the listed OS-provided candidates. Other platforms can provide BOOK_VIDEO_FONT_DIRS. No font binary is bundled; rendering fails closed when a required role is unavailable."
   },
   "palette": {
     "background": "#050505",

@@ -17,11 +17,12 @@ from book_video_factory.typography import fit_book_title  # noqa: E402
 class BookTitleLayoutTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.font_path = ROOT / "resources/fonts/SmileySans-Oblique.otf"
         cls.draw = ImageDraw.Draw(Image.new("RGBA", (720, 960)))
 
     def font_loader(self, size: int) -> ImageFont.FreeTypeFont:
-        return ImageFont.truetype(str(self.font_path), size=size)
+        # Pillow's embedded in-memory font is a deterministic test fixture only.
+        # Production resolution never uses it as a Chinese fallback.
+        return ImageFont.load_default(size=size)
 
     def assert_safe(self, title: str) -> None:
         layout = fit_book_title(
@@ -51,7 +52,7 @@ class BookTitleLayoutTests(unittest.TestCase):
             self.draw,
             "自卑与超越（完整全译本）",
             self.font_loader,
-            max_width=608,
+            max_width=480,
             max_font_size=70,
             min_font_size=34,
             stroke_width=3,
@@ -63,12 +64,19 @@ class BookTitleLayoutTests(unittest.TestCase):
             self.draw,
             "原生家庭：如何修补自己的性格缺陷",
             self.font_loader,
-            max_width=608,
+            max_width=400,
             max_font_size=70,
             min_font_size=34,
             stroke_width=3,
         )
         self.assertEqual(layout.lines, ("《原生家庭：", "如何修补自己的性格缺陷》"))
+        self.assertLess(layout.font_size, 70)
+        self.assertGreaterEqual(layout.font_size, 34)
+
+    def test_chinese_text_is_measurable_with_test_fixture(self) -> None:
+        box = self.draw.textbbox((0, 0), "中文字符测量", font=self.font_loader(48))
+        self.assertGreater(box[2] - box[0], 0)
+        self.assertGreater(box[3] - box[1], 0)
 
 
 if __name__ == "__main__":

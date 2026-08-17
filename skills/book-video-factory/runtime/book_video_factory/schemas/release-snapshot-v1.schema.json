@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://book-video-factory.local/schemas/release-snapshot-v1.schema.json",
+  "title": "Immutable Release Snapshot v1",
+  "description": "Minimal write-once freeze of approved, rights-cleared release inputs before renderer request creation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "snapshot_id", "snapshot_hash", "project_id", "release_id", "created_at", "profile", "artifacts", "artifact_hashes", "timeline_source", "audio_source", "caption_source", "rights", "approvals", "release_gates", "source_manifests", "metadata"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "snapshot_id": {"type": "string", "pattern": "^rsn_[0-9a-f]{24}$"},
+    "snapshot_hash": {"$ref": "#/$defs/hash"},
+    "project_id": {"type": "string", "minLength": 1},
+    "release_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "pattern": "Z$"},
+    "profile": {"$ref": "#/$defs/source_binding"},
+    "artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifact"}},
+    "artifact_hashes": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/hash"}
+    },
+    "timeline_source": {"$ref": "#/$defs/source_binding"},
+    "audio_source": {"$ref": "#/$defs/source_binding"},
+    "caption_source": {"$ref": "#/$defs/source_binding"},
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "policy_version", "snapshot_ref", "snapshot_sha256"],
+      "properties": {
+        "status": {"enum": ["allowed", "blocked"]},
+        "policy_version": {"type": "string", "minLength": 1},
+        "snapshot_ref": {"$ref": "#/$defs/portable_ref"},
+        "snapshot_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "event_ids", "snapshot_sha256"],
+      "properties": {
+        "status": {"enum": ["approved", "blocked"]},
+        "event_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "snapshot_sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "release_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "gate_ids", "policy_version"],
+      "properties": {
+        "status": {"enum": ["passed", "blocked"]},
+        "gate_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "policy_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_manifests": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source_binding"}},
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "created_by": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    }
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "portable_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "path"],
+      "properties": {
+        "root": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "ref", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "ref": {"$ref": "#/$defs/portable_ref"},
+        "sha256": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_id", "role", "ref", "bytes", "sha256", "media_type", "source_manifest_artifact_id", "rights_ref"],
+      "properties": {
+        "asset_id": {"type": "string", "minLength": 1},
+        "role": {"type": "string", "minLength": 1},
+        "ref": {"$ref": "#/$defs/portable_ref"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/hash"},
+        "media_type": {"type": "string", "minLength": 1},
+        "source_manifest_artifact_id": {"type": "string", "minLength": 1},
+        "rights_ref": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

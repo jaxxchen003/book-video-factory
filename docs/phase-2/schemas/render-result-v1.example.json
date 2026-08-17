@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "request_id": "render-request-001",
+  "request_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "attempt_id": "render-attempt-001",
+  "status": "succeeded",
+  "renderer": {
+    "id": "renderer.example.v1",
+    "version": "1.0.0",
+    "capability_document_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "started_at": "2026-07-31T12:01:00Z",
+  "finished_at": "2026-07-31T12:02:30Z",
+  "output": [
+    {
+      "artifact_id": "local-master",
+      "role": "local_master",
+      "ref": {
+        "root": "project",
+        "path": "08_render_合成/final/release-001/local-master.mp4"
+      },
+      "bytes": 4200000,
+      "sha256": "abababababababababababababababababababababababababababababababab",
+      "media_type": "video/mp4"
+    }
+  ],
+  "sidecars": [
+    {
+      "artifact_id": "captions-zh-srt",
+      "role": "caption_sidecar",
+      "ref": {
+        "root": "project",
+        "path": "08_render_合成/final/release-001/captions.zh-CN.srt"
+      },
+      "bytes": 512,
+      "sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "media_type": "application/x-subrip"
+    },
+    {
+      "artifact_id": "media-probe",
+      "role": "media_probe",
+      "ref": {
+        "root": "project",
+        "path": "08_render_合成/attempts/render-request-001/render-attempt-001/media-probe.json"
+      },
+      "bytes": 1024,
+      "sha256": "dededededededededededededededededededededededededededededededede",
+      "media_type": "application/json"
+    }
+  ],
+  "media_probe": {
+    "sidecar_artifact_id": "media-probe",
+    "duration_ticks": 12000,
+    "video": {
+      "codec": "h264",
+      "width": 720,
+      "height": 960,
+      "fps": {
+        "numerator": 30,
+        "denominator": 1
+      },
+      "pixel_format": "yuv420p",
+      "frame_count": 360
+    },
+    "audio": {
+      "codec": "aac",
+      "sample_rate": 48000,
+      "channels": 2
+    }
+  },
+  "warnings": [],
+  "errors": [],
+  "primary_error_code": null,
+  "metrics": {
+    "elapsed_milliseconds": 90000,
+    "duration_ticks": 12000,
+    "frame_count": 360,
+    "peak_working_set_bytes": 268435456
+  },
+  "input_hashes": {
+    "request": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "project_manifest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "release_manifest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "release_profile": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "asset_snapshot": "1212121212121212121212121212121212121212121212121212121212121212"
+  },
+  "output_hashes": {
+    "local-master": "abababababababababababababababababababababababababababababababab",
+    "captions-zh-srt": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+    "media-probe": "dededededededededededededededededededededededededededededededede"
+  },
+  "qc_handoff": {
+    "release_id": "release-001",
+    "request_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "attempt_id": "render-attempt-001",
+    "output_asset_ids": [
+      "local-master"
+    ],
+    "output_spec_snapshot": {
+      "width": 720,
+      "height": 960,
+      "fps": {
+        "numerator": 30,
+        "denominator": 1
+      },
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "duration_ticks": 12000
+    },
+    "media_probe_artifact_id": "media-probe",
+    "renderer_checks": [
+      {
+        "id": "output_exists",
+        "result": "pass",
+        "severity": "error"
+      },
+      {
+        "id": "basic_probe_matches_output_spec",
+        "result": "pass",
+        "severity": "error"
+      }
+    ],
+    "expected_post_qc_profile_id": "example-vertical-profile",
+    "rights_snapshot_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+    "approval_snapshot_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+  },
+  "logs": [
+    {
+      "role": "renderer_log",
+      "ref": {
+        "root": "project",
+        "path": "08_render_合成/attempts/render-request-001/render-attempt-001/logs/renderer.log"
+      }
+    }
+  ],
+  "extensions": {
+    "org.book-video-factory.example": {
+      "schema_version": "1.0",
+      "quality_tier": "standard"
+    }
+  }
+}

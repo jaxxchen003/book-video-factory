@@ -3,13 +3,13 @@ from __future__ import annotations
 import json
 import os
 import ssl
-import subprocess
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from .credentials import load_secret
 from .project import write_json
 
 
@@ -26,24 +26,9 @@ def utc_now() -> str:
 
 
 def load_api_key() -> str:
-    env_value = os.environ.get("WEREAD_API_KEY", "").strip()
-    if env_value:
-        return env_value
-    if os.uname().sysname == "Darwin":
-        completed = subprocess.run(
-            [
-                "security",
-                "find-generic-password",
-                "-s",
-                "codex-weread-api-key",
-                "-w",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if completed.returncode == 0 and completed.stdout.strip():
-            return completed.stdout.strip()
+    value = load_secret("WEREAD_API_KEY", "codex-weread-api-key")
+    if value:
+        return value
     raise WeReadError(
         "WeChat Reading credential not found in WEREAD_API_KEY or macOS Keychain"
     )
